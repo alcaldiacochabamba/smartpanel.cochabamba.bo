@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RoutesService } from './routes.service';
 import { RoutesController } from './routes.controller';
-import { Panel } from './entities/panels.entity';
+import { Panel } from '../panels/entities/panel.entity';
 import { Route } from './entities/route.entity';
 import { RouteDetail } from './entities/route-detail.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';

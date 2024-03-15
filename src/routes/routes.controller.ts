@@ -3,13 +3,20 @@ import { RoutesService } from './routes.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { Route } from './entities/route.entity';
 
+@ApiTags('Routes')
+@ApiSecurity('basic')
 @Controller('routes')
 export class RoutesController {
   constructor(private readonly routesService: RoutesService) {}
 
   @Get('panels')
   @UseGuards(AuthGuard())
+  @ApiResponse({status: 200, description: 'Returns all panels',type: Route})
+  @ApiResponse({status: 400, description: 'Bad request'})
+  @ApiResponse({status: 401, description: 'Forbidden, token reloaded'})
   findAllPanels() {
     return this.routesService.findAllPanels();
   }

@@ -1,21 +1,25 @@
 import {  Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { RouteDetail } from "./route-detail.entity";
-import { Panel } from "./panels.entity";
+import { Panel } from "../../panels/entities/panel.entity";
+import { ApiProperty } from "@nestjs/swagger";
 
 @Entity({ name: 'routes' })
 export class Route {
     @PrimaryGeneratedColumn()
     id: number;
-
+    
+    @ApiProperty({example:'57a9dd6d-cd3d-451f-ae69-33146af7f597', description: 'nos devolvera el identificador de la ruta',uniqueItems:true})
     @PrimaryGeneratedColumn('uuid')
     uuid: string;
 
+    @ApiProperty()
     @Column('text', { unique: true })
     title: string;
 
+    @ApiProperty()
     @Column('text', { nullable: false })
     origin: string;
-
+    @ApiProperty()
     @Column('text', { nullable: false })
     destination: string;
 

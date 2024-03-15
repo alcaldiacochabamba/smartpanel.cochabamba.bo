@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { HelpersModule } from './helpers/helpers.module';
 import { AuthModule } from './auth/auth.module';
 import { RoutesModule } from './routes/routes.module';
+import { PanelsModule } from './panels/panels.module';
 
 
 @Module({
@@ -23,7 +24,8 @@ import { RoutesModule } from './routes/routes.module';
     }),
     HelpersModule,
     AuthModule,
-    RoutesModule
+    RoutesModule,
+    PanelsModule
   ],
   controllers: [AppController],
   providers: [AppService],
