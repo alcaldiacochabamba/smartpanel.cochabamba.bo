@@ -21,7 +21,7 @@ export class RoutesService {
   ) { }
 
   async getTrafficInfo(uuid: string) {
-    const panel = await this.panelRepository.findOneBy({ uuid: uuid });
+    const panel = await this.panelRepository.findOneBy({ id: uuid });
     let routeList = [];
     if(!panel){
       return { error: 'Error al obtener datos de tráfico. Consulta los registros del servidor para más detalles.' };
