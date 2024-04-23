@@ -7,11 +7,11 @@ services:
       context: .
       dockerfile: Dockerfile
       # ✨ Target the dev stage
-      target: build
+      target: prod
     user: "node"
     # Mount host directory to docker container to support watch mode
     volumes:
-     ## - .:/app
+      - .:/app
       # This ensures that the NestJS container manages the node_modules folder
       # rather than synchronizes it with the host machine
       - /app/node_modules
