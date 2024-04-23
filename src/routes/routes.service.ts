@@ -36,7 +36,7 @@ export class RoutesService {
   async getRouteMapsGoogle(route: Route) {
     const apiKey = 'AIzaSyBMDPC4tM2JYgU8gq2tUouiwyK3cHdWmKo'; // Reemplaza con tu propia clave de API de Google Maps
 
-    const { origin, destination, mode, departure_time, traffic_model, title } = route;
+    const {  destination, mode, departure_time, traffic_model, title } = route;
 
     const apiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&key=${apiKey}&mode=${mode}&departure_time=${departure_time}&traffic_model=${traffic_model}`;
     try {

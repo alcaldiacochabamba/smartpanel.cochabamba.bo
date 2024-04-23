@@ -4,7 +4,7 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('messages')
+@Controller('api/v1/messages')
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 

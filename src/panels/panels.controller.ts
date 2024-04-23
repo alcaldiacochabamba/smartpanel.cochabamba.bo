@@ -4,7 +4,7 @@ import { CreatePanelDto } from './dto/create-panel.dto';
 import { UpdatePanelDto } from './dto/update-panel.dto';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('v1/panels')
+@Controller('api/v1/panels')
 export class PanelsController {
   constructor(private readonly panelsService: PanelsService) {}
 
