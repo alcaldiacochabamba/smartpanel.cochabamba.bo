@@ -22,7 +22,7 @@ RUN yarn --frozen-lockfile
 
 # Set Docker as a non-root user
 USER node
-CMD ["yarn", "start:debug"]
+##CMD ["yarn", "start:debug"]
 
 #
 # 🏡 Production Build
