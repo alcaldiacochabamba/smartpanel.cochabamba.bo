@@ -8,21 +8,12 @@ export class RouteDetail {
 
     @Column('text', { unique: true })
     title: string;
-
-    @Column('text', { nullable: false })
-    distance_desc: string;
     
     @Column('int', { nullable: false })
     distance: number;
-
-    @Column('text', { nullable: false })
-    duration_desc: string;
     
     @Column('int', { nullable: false })
     duration: number;
-
-    @Column('text', { nullable: false })
-    duration_in_traffic_desc: string;
 
     @Column('int', { nullable: false })
     duration_in_traffic: number;

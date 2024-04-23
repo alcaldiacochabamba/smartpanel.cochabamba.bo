@@ -8,7 +8,7 @@ import { Route } from './entities/route.entity';
 
 @ApiTags('Routes')
 @ApiSecurity('basic')
-@Controller('routes')
+@Controller('api/v1/routes')
 export class RoutesController {
   constructor(private readonly routesService: RoutesService) {}
 
@@ -27,12 +27,6 @@ export class RoutesController {
   getTrafficInfo(@Param('uuid') uuid: string) {
     return this.routesService.getTrafficInfo(uuid);
   }
-
-
-
-
-
-
 
   @Post()
   create(@Body() createRouteDto: CreateRouteDto) {
