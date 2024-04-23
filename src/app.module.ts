@@ -7,6 +7,7 @@ import { HelpersModule } from './helpers/helpers.module';
 import { AuthModule } from './auth/auth.module';
 import { RoutesModule } from './routes/routes.module';
 import { PanelsModule } from './panels/panels.module';
+import { MessagesModule } from './messages/messages.module';
 
 
 @Module({
@@ -25,7 +26,8 @@ import { PanelsModule } from './panels/panels.module';
     HelpersModule,
     AuthModule,
     RoutesModule,
-    PanelsModule
+    PanelsModule,
+    MessagesModule
   ],
   controllers: [AppController],
   providers: [AppService],

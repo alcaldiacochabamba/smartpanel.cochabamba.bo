@@ -1,4 +1,4 @@
-import {  Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {  Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Route } from "./route.entity";
 
 @Entity({ name: 'route_details' })
@@ -49,8 +49,10 @@ export class RouteDetail {
     register_date: Date;
 
     @ManyToOne(() => Route, route => route.details, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'route_id' })
     route: Route
-
+    @Column()
+    route_id: number
 
 
 }

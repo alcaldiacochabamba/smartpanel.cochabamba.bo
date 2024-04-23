@@ -6,14 +6,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
-@Controller('auth')
+@Controller('v1/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
 
   @Post('register')
   create(@Body() createUserDto: CreateUserDto) {
-    console.log(createUserDto);
     return this.authService.create(createUserDto);
   }
 
