@@ -17,6 +17,7 @@ RUN adduser --system --uid 1001 nextjs
 # Copy source code into app folder
 COPY --chown=nextjs:nodejs . .
 RUN chown -R nextjs:nodejs /app
+RUN chmod 777 -R /app
 # Install dependencies
 RUN yarn --frozen-lockfile
 
