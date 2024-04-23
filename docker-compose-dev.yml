@@ -17,5 +17,5 @@ services:
     env_file:
       - .env.dev
     ports:
-      - 5001:3000
+      - 5010:3000
     command: npx nest start --watch
