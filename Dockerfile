@@ -65,8 +65,8 @@ WORKDIR /app
 ENV NODE_ENV production
 
 # Re-create non-root user for Docker
-RUN addgroup --system --gid 1001 node
-RUN adduser --system --uid 1001 node
+#RUN addgroup --system --gid 1001 node
+#RUN adduser --system --uid 1001 node
 
 # Copy only the necessary files
 COPY --chown=node:node --from=build /app/dist dist
