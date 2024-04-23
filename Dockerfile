@@ -11,17 +11,17 @@ WORKDIR /app
 ENV NODE_ENV dev
 
 # Create non-root user for Docker
-RUN addgroup --system --gid 1001 node
-RUN adduser --system --uid 1001 node
+RUN addgroup --system --gid 1001 nodejs 
+RUN adduser --system --uid 1001 nextjs
 
 # Copy source code into app folder
-COPY --chown=node:node . .
+COPY --chown=nextjs:nodejs . .
 
 # Install dependencies
 RUN yarn --frozen-lockfile
 
 # Set Docker as a non-root user
-USER node
+USER nextjs
 
 #
 # 🏡 Production Build
