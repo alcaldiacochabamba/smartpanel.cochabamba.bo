@@ -11,8 +11,8 @@ WORKDIR /app
 ENV NODE_ENV dev
 
 # Create non-root user for Docker
-#RUN addgroup --system --gid 1001 node
-#RUN adduser --system --uid 1001 node
+RUN addgroup --system --gid 1001 node
+RUN adduser --system --uid 1001 node
 
 # Copy source code into app folder
 COPY --chown=node:node . .
