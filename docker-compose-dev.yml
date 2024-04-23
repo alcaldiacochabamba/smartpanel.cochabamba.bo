@@ -1,6 +1,6 @@
 services:
   api:
-    container_name: nestjs-dev
+    container_name: panel-inteligente-dev
     image: nestjs-dev
     restart: unless-stopped
     build:
