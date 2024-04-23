@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
       # ✨ Target the dev stage
-      target: prod
+      target: dev
     user: "node"
     # Mount host directory to docker container to support watch mode
     volumes:
@@ -19,4 +19,4 @@ services:
       - .env.dev
     ports:
       - 5010:3000
-    command: npx nest start --watch
+    #command: npx nest start --watch
