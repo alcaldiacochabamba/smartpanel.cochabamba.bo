@@ -19,4 +19,5 @@ services:
       - .env.dev
     ports:
       - 5010:3000
-    #command: npx nest start --watch
+    ##command: npx nest start --watch
+    command: npx node dist/main.js
