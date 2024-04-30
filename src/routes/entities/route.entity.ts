@@ -2,6 +2,7 @@ import { Column, Entity, Generated, JoinColumn, ManyToOne, OneToMany, PrimaryGen
 import { RouteDetail } from "./route-detail.entity";
 import { Panel } from "../../panels/entities/panel.entity";
 import { ApiProperty } from "@nestjs/swagger";
+import { User } from "src/auth/entities/users.entity";
 
 @Entity({ name: 'routes' })
 export class Route {
@@ -29,8 +30,20 @@ export class Route {
     nivel: number;
 
     @Column('text', { nullable: true })
-    arrow: string;
+    orientation: string;
 
+       /** 
+     * attribute: user
+     * description: Usuario creador del panel
+     * example: <uuid>
+    */
+       @ManyToOne(() => User)
+       @JoinColumn({ name: "user_id" })
+       user: User;    
+       @Column({ nullable: true })
+       user_id: string;
+   
+    
     /**
      * attribute: created_at
      * description: Fecha de creacion del ruta

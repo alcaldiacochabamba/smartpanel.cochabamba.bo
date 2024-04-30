@@ -10,17 +10,30 @@ import { Route } from './entities/route.entity';
 @ApiSecurity('basic')
 @Controller('api/v1/routes')
 export class RoutesController {
-  constructor(private readonly routesService: RoutesService) {}
+  constructor(private readonly routesService: RoutesService) { }
+
+
+  @Get()
+  @UseGuards(AuthGuard())
+  findAll() {
+    return this.routesService.findAll();
+  }
+
+  @Post()
+  @UseGuards(AuthGuard())
+  create(@Body() createRouteDto: CreateRouteDto) {
+    return this.routesService.create(createRouteDto);
+  }
+
+
+  /*-------------------------------------*/
+
 
   @Get('panels')
   @UseGuards(AuthGuard())
-  @ApiResponse({status: 200, description: 'Returns all panels',type: Route})
-  @ApiResponse({status: 400, description: 'Bad request'})
-  @ApiResponse({status: 401, description: 'Forbidden, token reloaded'})
-  findAllPanels() {
-    return this.routesService.findAllPanels();
-  }
-
+  @ApiResponse({ status: 200, description: 'Returns all panels', type: Route })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Forbidden, token reloaded' })
 
   @Get(':uuid/traffic')
   @UseGuards(AuthGuard())
@@ -28,15 +41,8 @@ export class RoutesController {
     return this.routesService.getTrafficInfo(uuid);
   }
 
-  @Post()
-  create(@Body() createRouteDto: CreateRouteDto) {
-    return this.routesService.create(createRouteDto);
-  }
 
-  @Get()
-  findAll() {
-    return this.routesService.findAll();
-  }
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {

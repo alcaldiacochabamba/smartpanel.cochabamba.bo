@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import axios from 'axios';
@@ -10,6 +10,8 @@ import { Panel } from '../panels/entities/panel.entity';
 @Injectable()
 export class RoutesService {
 
+  private readonly logger = new Logger('PanelsService');
+
   constructor(
 
     @InjectRepository(Route)
@@ -19,6 +21,27 @@ export class RoutesService {
     private dataSource: DataSource
 
   ) { }
+
+
+  findAll() {
+    const routes = this.routeRepository.find();
+    return routes;  
+  }
+
+ async create(createRouteDto: CreateRouteDto) {
+    
+    try{
+      
+      const route = this.routeRepository.create(createRouteDto);
+      await this.routeRepository.save(route);    
+      return route;
+
+    }catch(error){
+      this.manageDBExeptions(error);
+    }
+  }
+  
+  /*--------------------------------------------------------------*/
 
   async getTrafficInfo(uuid: string) {
     const panel = await this.panelRepository.findOneBy({ id: uuid });
@@ -54,17 +77,9 @@ export class RoutesService {
       return {ok:false, error: 'Error al obtener datos de tráfico. Consulta los registros del servidor para más detalles.' };
     }
   }
+ 
 
-  findAllPanels() {
-    return 'This action view all panels';
-  }
-  create(createRouteDto: CreateRouteDto) {
-    return 'This action adds a new route';
-  }
 
-  findAll() {
-    return `This action returns all routes`;
-  }
 
   findOne(id: number) {
     return `This action returns a #${id} route`;
@@ -76,5 +91,13 @@ export class RoutesService {
 
   remove(id: number) {
     return `This action removes a #${id} route`;
+  }
+
+
+  private manageDBExeptions(error: any) {
+    this.logger.error(error.message, error.stack);
+    if (error.code === '23505') throw new BadRequestException(error.detail);
+    throw new InternalServerErrorException('Internal Server Error');
+    
   }
 }
