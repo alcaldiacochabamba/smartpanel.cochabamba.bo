@@ -6,7 +6,7 @@ export class RouteDetail {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column('text', { unique: true })
+    @Column('text', { unique: false })
     title: string;
 
     @Column('int', { nullable: false })

@@ -26,10 +26,11 @@ export class Route {
     @Column('text', { nullable: true })
     traffic_model: string;
 
-    @Column('integer', { nullable: true })
+    @Column('integer', { nullable: true, comment: 'null:Ruta padre, 1: Ruta hijo, 2: Ruta nieto'})
     nivel: number;
 
-    @Column('text', { nullable: true })
+
+    @Column('text', { nullable: true, comment: 'IZQUIERDA, DERECHA, CENTRO'})
     orientation: string;
 
        /** 

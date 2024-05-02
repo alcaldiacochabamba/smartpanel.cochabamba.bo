@@ -9,13 +9,6 @@ export class CreateRouteDto {
     @IsString()
     mode: string;
 
-    @IsString()
-    departure_time: string;
-
-
-    @IsString()
-    traffic_model: string;
-
     @IsInt()
     nivel: number;
 
