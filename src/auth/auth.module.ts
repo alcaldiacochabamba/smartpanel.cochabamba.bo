@@ -18,12 +18,13 @@ import { JwtStrategy } from './jwt.strategy';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+      
       useFactory: (configService: ConfigService) => {
-        console.log(configService.get('JWT_SECRET'));
+        const jwtTimeExpiration:string = configService.get('JWT_EXPIRED_TIME');
         return {
           secret: configService.get('JWT_SECRET'),
           signOptions: {
-            expiresIn: '12h',
+            //expiresIn: jwtTimeExpiration,
           }
         }
       }   

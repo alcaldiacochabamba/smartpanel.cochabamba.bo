@@ -1,0 +1,227 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[spanish]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{Documentación de los servicios de SmartPanel}
+\author{Jose Luis Yacelly Ramos }
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Servicio de Autenticación}
+
+Este servicio permite a los usuarios autenticarse en el sistema. Los usuarios proporcionan sus credenciales, que son verificadas por el sistema. Si las credenciales son válidas, el sistema genera un token JWT que se utiliza para autenticar las solicitudes subsiguientes del usuario.
+
+\subsection{Endpoint: POST https://smartpanel.cochabamba.bo/api/v1/auth/login}
+
+Este endpoint se utiliza para iniciar sesión en el sistema.
+
+\subsubsection{Encabezados}
+
+\begin{itemize}
+\item Content-Type: application/json
+\end{itemize}
+
+\subsubsection{Cuerpo de la solicitud}
+
+\begin{verbatim}
+{
+  "email": "demo@cochabamba.bo",
+  "password": "Abc123"
+}
+\end{verbatim}
+
+\subsubsection{Ejemplo de comando curl}
+
+\begin{verbatim}
+curl --request POST \
+  --url https://smartpanel.cochabamba.bo/api/v1/auth/login \
+  --header 'content-type: application/json' \
+  --data '{
+    "email": "demo@cochabamba.bo",
+    "password":"Abc123"
+  }'
+\end{verbatim}
+
+
+\subsubsection{Salida del Servicio}
+
+La salida del servicio es la siguiente:
+
+\begin{verbatim}
+{
+  "id": "18323872-fb8c-4403-84b9-4eff4afb479c",
+  "email": "demo@cochabamba.bo",
+  "token": "<JWT>"
+}
+\end{verbatim}
+\newpage
+
+\section{Servicio de Paneles}
+
+Este servicio permite a los usuarios autenticados recuperar información sobre los paneles disponibles en el sistema.
+
+\subsection{Endpoint: GET https://smartpanel.cochabamba.bo/api/v1/panels}
+
+Este endpoint se utiliza para obtener una lista de todos los paneles.
+
+\subsubsection{Encabezados}
+
+\begin{itemize}
+\item Authorization: Bearer \textless JWT\textgreater
+\item Content-Type: application/json
+\end{itemize}
+
+\subsubsection{Ejemplo de comando curl}
+
+\begin{verbatim}
+curl --request GET \
+  --url https://smartpanel.cochabamba.bo/api/v1/panels \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE4MzIzODcyLWZiOGMtNDQwMy04NGI5LTRlZmY0YWZiNDc5YyIsImlhdCI6MTcxNDc0OTQ3NSwiZXhwIjoxNzE0NzkyNjc1fQ.Ca8Tph3SGAS7MrUswgReYnGbVxvvPpSuG_J7JPrSTXY' \
+  --header 'Content-Type: '
+\end{verbatim}
+
+\subsubsection{Salida del Servicio}
+
+La salida del servicio es la siguiente:
+
+\begin{verbatim}
+[
+  {
+    "id": "6f04185f-01b5-4ed6-890e-faa95aa1e091",
+    "code": "P021",
+    "location": "Av libertador",
+    "origin": "-17.379260, -66.160593",
+    "active": true,
+    "user_id": "18323872-fb8c-4403-84b9-4eff4afb479c",
+    "created_at": "2024-05-03T21:15:46.942Z",
+    "updated_at": "2024-05-03T21:15:46.942Z",
+    "messages": [
+      {
+        ...
+      }
+    ],
+    "routes": [
+      {
+        ...
+        "details": [
+          {
+           ...
+          }
+        ]
+      }
+    ],
+    ...
+  }
+]
+\end{verbatim}
+\newpage
+
+\section{Servicio para obtener un Panel}
+
+Este servicio permite a los usuarios autenticados recuperar información sobre un panel especifico en el sistema.
+
+\subsection{Endpoint: GET https://smartpanel.cochabamba.bo/api/v1/panels/UUID }
+
+Este endpoint se utiliza para obtener un panel a partir de su UUID.
+
+\subsubsection{Encabezados}
+
+\begin{itemize}
+\item Authorization: Bearer \textless JWT\textgreater
+\item Content-Type: application/json
+\end{itemize}
+
+\subsubsection{Ejemplo de comando curl}
+
+\begin{verbatim}
+curl --request GET \
+  --url https://smartpanel.cochabamba.bo/api/v1/panels/6f04185f-01b5-4ed6-890e-faa95aa1e091 \
+  --header 'Authorization Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE4MzIzODcyLWZiOGMtNDQwMy04NGI5LTRlZmY0YWZiNDc5YyIsImlhdCI6MTcxNTA4OTc2NCwiZXhwIjoxNzE5MTMyOTY0fQ.cSuOuf-1xhzEaFKjW3rHjyoXkJKKc1pTPqSjFeL82Aw' \
+  --header 'content-type: application/json'
+\end{verbatim}
+\subsubsection{Salida del Servicio}
+
+La salida del servicio es la siguiente:
+
+\begin{verbatim}
+{
+  "id": "6f04185f-01b5-4ed6-890e-faa95aa1e091",
+  "code": "P021",
+  "location": "Av libertador",
+  "origin": "-17.379260, -66.160593",
+  "active": true,
+  "user_id": "18323872-fb8c-4403-84b9-4eff4afb479c",
+  "created_at": "2024-05-03T21:15:46.942Z",
+  "updated_at": "2024-05-03T21:15:46.942Z",
+  "messages": [
+    {
+      "id": "25e16bd4-3193-42cf-99d4-1e8c6f5a1672",
+      "title": "Mensaje de prueba 02101",
+      "description": "descripcion de prueba",
+      "priority": "alta",
+      "active": true,
+      "icon": null,
+      "type": null,
+      "user_id": "18323872-fb8c-4403-84b9-4eff4afb479c",
+      "created_at": "2024-05-03T21:15:46.942Z",
+      "updated_at": "2024-05-03T21:15:46.942Z",
+      "panel_id": "6f04185f-01b5-4ed6-890e-faa95aa1e091"
+    }
+  ],
+  "routes": [
+    {
+      "id": "a219ea62-11c3-40b8-a17f-8e1339a744dc",
+      "title": "prado",
+      "destination": "-17.387377285032695, -66.1562994586044",
+      "mode": "driving",
+      "departure_time": "now",
+      "traffic_model": "best_guess",
+      "nivel": 0,
+      "orientation": "derecha",
+      "user_id": null,
+      "created_at": "2024-05-03T17:41:35.130Z",
+      "updated_at": "2024-05-03T17:41:35.130Z",
+      "panel_id": "6f04185f-01b5-4ed6-890e-faa95aa1e091",
+      "parent_route_id": null,
+      "details": [
+        {
+          "id": 6,
+          "title": "Av. Libertador Simón Bolívar and Av. José Ballivian",
+          "distance": 1349,
+          "duration": 269,
+          "duration_in_traffic": 289,
+          "end_address": "JR7V+3F4, Av. José Ballivian, Cochabamba, Bolivia",
+          "end_address_lat": "-17.3873521",
+          "end_address_lng": "-66.1562611",
+          "start_address": "Av. Libertador Simón Bolívar 1154, Cochabamba, Bolivia",
+          "start_address_lat": "-17.3792789",
+          "start_address_lng": "-66.1606745",
+          "created_at": "2024-05-03T17:41:35.401Z",
+          "updated_at": "2024-05-03T17:41:35.401Z",
+          "route_id": "a219ea62-11c3-40b8-a17f-8e1339a744dc"
+        }
+      ]
+    },
+   ...
+  ]
+}
+\end{verbatim}
+
+\end{document}
+
+
+% Latex Online: https://www.overleaf.com/project/663a2e6b55b0fc74fb20b142

@@ -10,6 +10,7 @@ export class CreateRouteDto {
     mode: string;
 
     @IsInt()
+    @IsOptional()
     nivel: number;
 
     @IsString()
