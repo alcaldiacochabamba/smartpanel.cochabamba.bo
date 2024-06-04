@@ -10,6 +10,7 @@ import { PanelsModule } from './panels/panels.module';
 import { MessagesModule } from './messages/messages.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { LanesModule } from './lanes/lanes.module';
 
 
 
@@ -33,7 +34,8 @@ import { join } from 'path';
     AuthModule,
     RoutesModule,
     PanelsModule,
-    MessagesModule
+    MessagesModule,
+    LanesModule
   ],
   controllers: [AppController],
   providers: [AppService],

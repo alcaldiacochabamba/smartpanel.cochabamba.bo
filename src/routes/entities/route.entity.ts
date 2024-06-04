@@ -3,6 +3,7 @@ import { RouteDetail } from "./route-detail.entity";
 import { Panel } from "../../panels/entities/panel.entity";
 import { ApiProperty } from "@nestjs/swagger";
 import { User } from "src/auth/entities/users.entity";
+import { Lane } from "src/lanes/entities/lane.entity";
 
 @Entity({ name: 'routes' })
 export class Route {
@@ -26,14 +27,10 @@ export class Route {
     @Column('text', { nullable: true })
     traffic_model: string;
 
-    @Column('integer', { nullable: true, comment: 'null:Ruta padre, 1: Ruta hijo, 2: Ruta nieto'})
-    nivel: number;
+    @Column('integer',{nullable:false})
+    order:number;
 
-
-    @Column('text', { nullable: true, comment: 'IZQUIERDA, DERECHA, CENTRO'})
-    orientation: string;
-
-       /** 
+    /** 
      * attribute: user
      * description: Usuario creador del panel
      * example: <uuid>
@@ -69,18 +66,10 @@ export class Route {
     )
     details?: RouteDetail[];
 
-    @ManyToOne(() => Panel, panel => panel.routes, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'panel_id' })
-    panel: Panel;
+    @ManyToOne(() => Lane, lane => lane.routes, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'lane_id' })
+    lane: Lane;
 
     @Column()
-    panel_id: string;
-
-    @OneToMany(() => Route, route => route.parentRoute)
-    subroutes: Route[]; // Add this line
-
-    @ManyToOne(() => Route, route => route.subroutes, { onDelete: 'CASCADE' }) 
-    @JoinColumn({ name: 'parent_route_id' }) parentRoute: Route;
-    @Column({ nullable: true }) 
-    parent_route_id: string;
+    lane_id: string;
 }

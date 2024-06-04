@@ -6,6 +6,9 @@ export class CreateRouteDto {
     @IsString()
     destination: string;
 
+    @IsInt()
+    order:number;
+
     @IsString()
     mode: string;
 
@@ -13,16 +16,11 @@ export class CreateRouteDto {
     @IsOptional()
     nivel: number;
 
-    @IsString()
-    orientation: string;
 
     @IsUUID()
-    panel_id: string;
+    lane_id: string;
 
-    @IsUUID()
-    @IsOptional()
-    parent_route_id: string;
-
+    
     @IsUUID()
     @IsOptional()
     user_id:string;

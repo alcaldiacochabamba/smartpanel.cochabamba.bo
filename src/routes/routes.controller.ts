@@ -31,8 +31,6 @@ export class RoutesController {
     return this.routesService.remove(uuid);
   }
 
-  /*-------------------------------------*/
-
 
   @Get('panels')
   @UseGuards(AuthGuard())
@@ -42,12 +40,6 @@ export class RoutesController {
 
   @Get(':uuid/traffic')
   @UseGuards(AuthGuard())
-  getTrafficInfo(@Param('uuid') uuid: string) {
-    return this.routesService.getTrafficInfo(uuid);
-  }
-
-
-
 
   @Get(':id')
   findOne(@Param('id') id: string) {

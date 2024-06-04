@@ -19,8 +19,9 @@ export class PanelsController {
 
   @Get()
   @UseGuards(AuthGuard())
-  findAll() {
-    return this.panelsService.findAll();
+  async findAll() {
+    return await this.panelsService.findAll();
+    //return this.panelsService.findAll();
   }
 
   @Get(':uuid')
