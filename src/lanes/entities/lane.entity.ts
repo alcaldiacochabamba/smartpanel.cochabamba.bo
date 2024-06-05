@@ -20,21 +20,22 @@ export class Lane {
     orientation:string;
 
    
+   /** 
+     * attribute: user
+     * description: Usuario creador del panel
+     * example: <uuid>
+    */
+    @ManyToOne(() => User)
+    @JoinColumn({ name: "user_id" })
+    user: User;    
+    @Column({ nullable: false })
+    user_id: string;
 
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
     created_at: Date;
 
     @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
     updated_at: Date;
-
-    /*@OneToMany(() => Route, route => route.lane,
-    {
-        cascade: true,
-        eager: true,
-
-    }
-    )
-    routes?: Route[];  */
 
     @ManyToOne(() => Panel, panel => panel.lanes, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'panel_id' })

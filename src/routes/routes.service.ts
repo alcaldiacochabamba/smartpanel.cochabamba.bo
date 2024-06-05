@@ -16,6 +16,7 @@ export class RoutesService {
   private readonly logger = new Logger('PanelsService');
 
   constructor(
+
     @InjectRepository(Route)
     private routeRepository: Repository<Route>,
     @InjectRepository(Panel)
@@ -24,13 +25,16 @@ export class RoutesService {
 
   ) { }
 
+
   findAll() {
     const routes = this.routeRepository.find();
     return routes;
   }
 
   async create(createRouteDto: CreateRouteDto) {
+
     try {
+
       const route = this.routeRepository.create(createRouteDto);
       route.departure_time = "now";
       route.traffic_model = "best_guess";
