@@ -10,6 +10,10 @@ export class CreateLaneDto {
     lane_number:number;
 
     @IsUUID()
+    @IsOptional()
+    user_id:string;
+
+    @IsUUID()
     panel_id: string;
     
 }
