@@ -9,6 +9,7 @@ import { Panel } from '../panels/entities/panel.entity';
 import { RouteDetail } from './entities/route-detail.entity';
 import { Lane } from 'src/lanes/entities/lane.entity';
 import { CreateLaneDto } from 'src/lanes/dto/create-lane.dto';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class RoutesService {
@@ -106,5 +107,11 @@ export class RoutesService {
     if (error.code === '23505') throw new BadRequestException(error.detail);
     throw new InternalServerErrorException('Internal Server Error');
 
+  }
+
+  //realizando las pruebas con cron
+  @Cron('00 15 * * * *')
+  handleCron() {
+    this.logger.debug('realizando la prueba del cron');
   }
 }

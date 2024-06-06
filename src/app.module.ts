@@ -11,6 +11,8 @@ import { MessagesModule } from './messages/messages.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LanesModule } from './lanes/lanes.module';
+import { ScheduleModule } from '@nestjs/schedule';
+
 
 
 
@@ -35,7 +37,8 @@ import { LanesModule } from './lanes/lanes.module';
     RoutesModule,
     PanelsModule,
     MessagesModule,
-    LanesModule
+    LanesModule,
+    ScheduleModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService],
