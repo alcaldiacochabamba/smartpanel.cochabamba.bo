@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
       # ✨ Target the dev stage
-      target: prod
+      target: dev
     user: "node"
     # Mount host directory to docker container to support watch mode
     volumes:
