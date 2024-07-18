@@ -97,7 +97,7 @@ export class RoutesService {
     }
   }
 
-  @Cron('0 */15 * * * *') // Cron para ejecutar cada 15 minutos
+  @Cron('0 */15 * * * *') 
   async actualizarRoutes() {
     try {
       const apiKey = 'AIzaSyBMDPC4tM2JYgU8gq2tUouiwyK3cHdWmKo';
