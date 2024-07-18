@@ -4,6 +4,8 @@ import { UpdatePanelDto } from './dto/update-panel.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Panel } from './entities/panel.entity';
 import { Repository } from 'typeorm';
+import { Lane } from 'src/lanes/entities/lane.entity';
+import { Route } from 'src/routes/entities/route.entity';
 
 @Injectable()
 export class PanelsService {
@@ -25,13 +27,39 @@ export class PanelsService {
     }
   }
 
-  async findAll() {
+  /*async findAll() {
     const panels = await this.panelRepository.find(); // Espera a que la promesa se resuelva
     //return this.categorizePanelsByStatus(panels); //retorno de un tipo de paneles con objetos dentro de un array
     //return this.categorizePanelsByCarril(panels);
     return panels;
-  }
+  }*/
 
+  async findAll() {
+    const panels = await this.panelRepository.find({ relations: ['lanes', 'lanes.routes', 'lanes.routes.details'] });
+    // Procesar cada panel
+    const panelsWithLatestDetails = panels.map(panel => {
+      const panelCopy = { ...panel };
+      // Procesar cada carril del panel
+      panelCopy.lanes = panel.lanes.map(lane => {
+        const laneCopy = { ...lane };
+        // Procesar cada ruta del carril
+        laneCopy.routes = lane.routes.map(route => {
+          const routeCopy = { ...route };
+          // Obtener el último detalle de la ruta
+          const latestDetail = route.details.reduce((latest, detail) => {
+            return detail.created_at > latest.created_at ? detail : latest;
+          }, route.details[0]);
+          // Asignar solo el último detalle a la ruta
+          routeCopy.details = [latestDetail];
+          return routeCopy;
+        });
+        return laneCopy;
+      });
+      return panelCopy;
+    });
+    return panelsWithLatestDetails;
+  }
+  
   private categorizePanelsByStatus(panels) {
     //funcion para separar en arrays
     /*const categorized = {ruta1: [],ruta2:[],ruta3:[]};
@@ -81,7 +109,7 @@ export class PanelsService {
   }
 
 
-  categorizePanelsByCarril(panels) {
+  /*categorizePanelsByCarril(panels) {
     // Crea un objeto para almacenar los paneles categorizados
     const categorizedPanels = {};
     // Itera sobre cada panel en la lista
@@ -113,7 +141,7 @@ export class PanelsService {
       categorizedPanels[panelCode].push(panelCopy);
     });
     return categorizedPanels;
-  }
+  }*/
 
   async findOne(uuid: string) {
     const panel = await this.panelRepository.findOneBy({ id: uuid });
