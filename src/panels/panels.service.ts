@@ -34,32 +34,44 @@ export class PanelsService {
     return panels;
   }*/
 
+  
   async findAll() {
     const panels = await this.panelRepository.find({ relations: ['lanes', 'lanes.routes', 'lanes.routes.details'] });
     // Procesar cada panel
     const panelsWithLatestDetails = panels.map(panel => {
       const panelCopy = { ...panel };
+      //console.log(panelCopy)
       // Procesar cada carril del panel
       panelCopy.lanes = panel.lanes.map(lane => {
         const laneCopy = { ...lane };
+        //console.log(laneCopy);
         // Procesar cada ruta del carril
         laneCopy.routes = lane.routes.map(route => {
           const routeCopy = { ...route };
+          //console.log(routeCopy);
           // Obtener el último detalle de la ruta
           const latestDetail = route.details.reduce((latest, detail) => {
             return detail.created_at > latest.created_at ? detail : latest;
           }, route.details[0]);
-          // Asignar solo el último detalle a la ruta
-          routeCopy.details = [latestDetail];
+          // Crear un nuevo objeto sin el campo 'id' en el detalle
+          const cleanDetail = { ...latestDetail };
+          delete cleanDetail.id; // Eliminar el campo 'id'
+          // Asignar el detalle limpio a la ruta
+          routeCopy.details = [cleanDetail];
+          //console.log(routeCopy);
           return routeCopy;
         });
+        //console.log(laneCopy);
         return laneCopy;
       });
+      //console.log(panelCopy);
       return panelCopy;
     });
     return panelsWithLatestDetails;
   }
-  
+    
+
+
   private categorizePanelsByStatus(panels) {
     //funcion para separar en arrays
     /*const categorized = {ruta1: [],ruta2:[],ruta3:[]};
