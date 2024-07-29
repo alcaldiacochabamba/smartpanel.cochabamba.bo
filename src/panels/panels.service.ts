@@ -155,11 +155,42 @@ export class PanelsService {
     return categorizedPanels;
   }*/
 
-  async findOne(uuid: string) {
+  /*async findOne(uuid: string) {
     const panel = await this.panelRepository.findOneBy({ id: uuid });
     if (!panel) throw new BadRequestException(`Panel with id ${uuid} not found`);
     return panel;
-  }
+  }*/
+
+    async findOne(uuid: string) {
+      const panel = await this.panelRepository.findOne({
+        where: { id: uuid },
+        relations: {
+          lanes: {
+            routes: {
+              details: true,
+            },
+          },
+        },
+      });
+  
+      if (!panel) throw new BadRequestException(`Panel with id ${uuid} not found`);
+  
+      panel.lanes.forEach(lane => {
+        lane.routes.forEach(route => {
+          route.details = this.getLatestDetail(route.details);
+        });
+      });
+  
+      return panel;
+    }
+
+  
+    private getLatestDetail(details: any[]): any[] {
+      if (details.length === 0) return [];
+      details.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
+      return [details[0]];
+    }
+
 
   async update(uuid: string, updatePanelDto: UpdatePanelDto) {
     try {
