@@ -67,7 +67,7 @@ export class RoutesService {
 
 
   async getRouteMapsGoogle(route_id: string) {
-    const apiKey = 'AIzaSyBMDPC4tM2JYgU8gq2tUouiwyK3cHdWmKo'; // Reemplaza con tu propia clave de API de Google Maps
+    const apiKey = 'AIzaSyBlnKdEioRJV1_Vnc2iXhVnOP5H_lxRVWM'; // Reemplaza con tu propia clave de API de Google Maps
     const rutaLane = await this.routeRepository.findOne({ where: { id: route_id }, relations: ['lane', 'lane.panel'] });
     const { destination, mode, departure_time, traffic_model, lane } = rutaLane;
     const apiUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(lane.panel.origin)}&destination=${encodeURIComponent(destination)}&key=${apiKey}&mode=${mode}&departure_time=${departure_time}&traffic_model=${traffic_model}`; 
@@ -100,7 +100,7 @@ export class RoutesService {
   @Cron('0 */15 * * * *') 
   async actualizarRoutes() {
     try {
-      const apiKey = 'AIzaSyBMDPC4tM2JYgU8gq2tUouiwyK3cHdWmKo';
+      const apiKey = 'AIzaSyBlnKdEioRJV1_Vnc2iXhVnOP5H_lxRVWM';
       // Obtener todos los paneles activos
       const panelesActivos = await this.panelRepository.find({ where: { active: true }, relations: ['lanes', 'lanes.routes', 'lanes.routes.lane', 'lanes.routes.lane.panel'] });
       // Iterar sobre cada panel activo y actualizar las rutas asociadas
