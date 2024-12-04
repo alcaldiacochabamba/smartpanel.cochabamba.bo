@@ -19,5 +19,8 @@ services:
       - .env.dev
     ports:
       - 5010:3000
+    environment:
+      # Establece opciones de memoria para Node.js
+      - NODE_OPTIONS=--max-old-space-size=4096
     command: npx nest start --watch
     ##command: npx node dist/main.js
