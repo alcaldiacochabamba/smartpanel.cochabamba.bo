@@ -31,7 +31,9 @@ export class MessagesController {
 
   @Patch(':uuid')
   @UseGuards(AuthGuard())
-  update(@Param('uuid') uuid: string, @Body() updateMessageDto: UpdateMessageDto) {
+  update(@Param('uuid') uuid: string, @Body() updateMessageDto: UpdateMessageDto, @Req() req: Request) {
+    const user_id = req['user'].id;
+    updateMessageDto.user_id = user_id;
     return this.messagesService.update(uuid, updateMessageDto);
   }
 
