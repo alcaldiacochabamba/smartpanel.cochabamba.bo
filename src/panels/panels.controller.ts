@@ -38,6 +38,7 @@ export class PanelsController {
   }
 
   @Delete(':uuid')
+  @UseGuards(AuthGuard())
   remove(@Param('uuid') uuid: string) {
     return this.panelsService.remove(uuid);
   }
