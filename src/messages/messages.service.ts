@@ -34,12 +34,25 @@ export class MessagesService {
     return message;
   }
 
-  update(id: number, updateMessageDto: UpdateMessageDto) {
-    return `This action updates a #${id} message`;
+  async update(uuid: string, updateMessageDto: UpdateMessageDto) {
+    try {
+      const message = await this.messageRepository.findOneBy({id: uuid});
+      if (!message) throw new BadRequestException(`Message with uuid ${uuid} not found`);
+      return this.messageRepository.update(uuid, updateMessageDto);
+    }catch(error) {
+      this.manageDBExeptions(error)
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} message`;
+  async remove(uuid: string) {
+    try {
+      const message = await this.messageRepository.findOneBy({id: uuid});
+      if (!message) throw new BadRequestException(`Message with uuid ${uuid} not found`);
+      this.messageRepository.remove(message);
+      return "The message has been delete";
+    }catch(error) {
+      this.manageDBExeptions(error);
+    }
   }
   
   private manageDBExeptions(error: any) {
