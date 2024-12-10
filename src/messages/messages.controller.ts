@@ -18,22 +18,28 @@ export class MessagesController {
   }
 
   @Get()
+  @UseGuards(AuthGuard())
   findAll() {
     return this.messagesService.findAll();
   }
 
   @Get(':uuid')
+  @UseGuards(AuthGuard())
   findOne(@Param('uuid') uuid: string) {
     return this.messagesService.findOne(uuid);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMessageDto: UpdateMessageDto) {
-    return this.messagesService.update(+id, updateMessageDto);
+  @Patch(':uuid')
+  @UseGuards(AuthGuard())
+  update(@Param('uuid') uuid: string, @Body() updateMessageDto: UpdateMessageDto, @Req() req: Request) {
+    const user_id = req['user'].id;
+    updateMessageDto.user_id = user_id;
+    return this.messagesService.update(uuid, updateMessageDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.messagesService.remove(+id);
+  @Delete(':uuid')
+  @UseGuards(AuthGuard())
+  remove(@Param('uuid') uuid: string) {
+    return this.messagesService.remove(uuid);
   }
 }
