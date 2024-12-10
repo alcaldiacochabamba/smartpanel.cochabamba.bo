@@ -11,17 +11,18 @@ WORKDIR /app
 ENV NODE_ENV dev
 
 # Create non-root user for Docker
-#RUN addgroup --system --gid 1001 node
-#RUN adduser --system --uid 1001 node
+#RUN addgroup --system --gid 1001 nodejs 
+#RUN adduser --system --uid 1001 nextjs
 
 # Copy source code into app folder
 COPY --chown=node:node . .
-
+RUN chmod 777 -R /app
 # Install dependencies
 RUN yarn --frozen-lockfile
 
 # Set Docker as a non-root user
 USER node
+##CMD ["yarn", "start:debug"]
 
 #
 # 🏡 Production Build
@@ -35,8 +36,8 @@ WORKDIR /app
 ENV NODE_ENV production
 
 # Re-create non-root user for Docker
-RUN addgroup --system --gid 1001 node
-RUN adduser --system --uid 1001 node
+##RUN addgroup --system --gid 1001 node
+##RUN adduser --system --uid 1001 node
 
 # In order to run `yarn build` we need access to the Nest CLI.
 # Nest CLI is a dev dependency.
@@ -65,13 +66,13 @@ WORKDIR /app
 ENV NODE_ENV production
 
 # Re-create non-root user for Docker
-RUN addgroup --system --gid 1001 node
-RUN adduser --system --uid 1001 node
+#RUN addgroup --system --gid 1001 node
+#RUN adduser --system --uid 1001 node
 
 # Copy only the necessary files
 COPY --chown=node:node --from=build /app/dist dist
 COPY --chown=node:node --from=build /app/node_modules node_modules
-
+COPY  --chown=node:node ./public /app/public
 # Set Docker as non-root user
 USER node
 

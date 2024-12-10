@@ -1,32 +1,23 @@
-import {  Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Route } from "./route.entity";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Route } from './route.entity';
 
 @Entity({ name: 'route_details' })
 export class RouteDetail {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column('text', { unique: true })
+    @Column('text', { unique: false })
     title: string;
 
-    @Column('text', { nullable: false })
-    distance_desc: string;
-    
     @Column('int', { nullable: false })
     distance: number;
 
-    @Column('text', { nullable: false })
-    duration_desc: string;
-    
     @Column('int', { nullable: false })
     duration: number;
 
-    @Column('text', { nullable: false })
-    duration_in_traffic_desc: string;
-
     @Column('int', { nullable: false })
     duration_in_traffic: number;
-   
+
     @Column('text', { nullable: true })
     end_address: string;
 
@@ -45,14 +36,26 @@ export class RouteDetail {
     @Column('text', { nullable: true })
     start_address_lng: string;
 
-    @Column({ type: 'date', nullable: false })
-    register_date: Date;
+    /**
+     * Attribute: created_at
+     * Description: Date of route details creation
+     * Example: 2022-01-01 8:01:00
+     */
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
+    created_at: Date;
 
-    @ManyToOne(() => Route, route => route.details, { onDelete: 'CASCADE' })
+    /**
+     * Attribute: updated_at
+     * Description: Date of route detail update
+     * Example: 2022-01-01 8:01:00
+     */
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
+    updated_at: Date;
+
+    @ManyToOne(() => Route, (route) => route.details, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'route_id' })
-    route: Route
+    route: Route;
+
     @Column()
-    route_id: number
-
-
+    route_id: string;
 }

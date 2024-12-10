@@ -8,10 +8,19 @@ import { AuthModule } from './auth/auth.module';
 import { RoutesModule } from './routes/routes.module';
 import { PanelsModule } from './panels/panels.module';
 import { MessagesModule } from './messages/messages.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { LanesModule } from './lanes/lanes.module';
+import { ScheduleModule } from '@nestjs/schedule';
+
+
 
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'), // Ruta a tu directorio de archivos estáticos
+    }),
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -27,7 +36,9 @@ import { MessagesModule } from './messages/messages.module';
     AuthModule,
     RoutesModule,
     PanelsModule,
-    MessagesModule
+    MessagesModule,
+    LanesModule,
+    ScheduleModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService],

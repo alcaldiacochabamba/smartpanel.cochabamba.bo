@@ -2,12 +2,13 @@ import {  Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, Pr
 import { User } from "src/auth/entities/users.entity";
 import { Message } from "src/messages/entities/message.entity";
 import { Route } from "src/routes/entities/route.entity";
+import { Lane } from "src/lanes/entities/lane.entity";
+
 
 @Entity({ name: 'panels' })
 export class Panel {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-
     /**
      * attribute: code
      * description: Codigo del panel
@@ -68,6 +69,14 @@ export class Panel {
     @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
     updated_at: Date;
     
+    @OneToMany(() => Lane, lane => lane.panel,{
+        cascade: true,
+        eager: true,
+
+    })
+    lanes: Lane[];
+
+
     @OneToMany(() => Message, message => message.panel,
     {
         cascade: true,
@@ -75,21 +84,4 @@ export class Panel {
 
     })    
     messages?: Message[];    
-
-    /** 
-     * attribute: routes
-     * description: Rutas del panel
-     * example: Route[]
-     */
-    @OneToMany(() => Route, route => route.panel,
-        {
-            cascade: true,
-            eager: true,
-
-        }
-    )
-    routes?: Route[];
-
-    
-
 }

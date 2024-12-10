@@ -4,7 +4,7 @@ import { CreatePanelDto } from './dto/create-panel.dto';
 import { UpdatePanelDto } from './dto/update-panel.dto';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('v1/panels')
+@Controller('api/v1/panels')
 export class PanelsController {
   constructor(private readonly panelsService: PanelsService) {}
 
@@ -19,8 +19,9 @@ export class PanelsController {
 
   @Get()
   @UseGuards(AuthGuard())
-  findAll() {
-    return this.panelsService.findAll();
+  async findAll() {
+    return await this.panelsService.findAll();
+    //return this.panelsService.findAll();
   }
 
   @Get(':uuid')

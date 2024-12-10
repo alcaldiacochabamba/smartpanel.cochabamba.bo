@@ -1,0 +1,26 @@
+services:
+  api:
+    container_name: panel-inteligente-dev
+    image: nestjs-dev
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # ✨ Target the dev stage
+      target: dev
+    user: "node"
+    # Mount host directory to docker container to support watch mode
+    volumes:
+      ##- .:/app
+      # This ensures that the NestJS container manages the node_modules folder
+      # rather than synchronizes it with the host machine
+      - /app/node_modules
+    env_file:
+      - .env.dev
+    ports:
+      - 5010:3000
+    environment:
+      # Establece opciones de memoria para Node.js
+      - NODE_OPTIONS=--max-old-space-size=4096
+    command: npx nest start --watch
+    ##command: npx node dist/main.js
