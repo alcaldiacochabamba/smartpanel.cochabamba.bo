@@ -42,14 +42,15 @@ export class RoutesController {
   @UseGuards(AuthGuard())
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.routesService.findOne(+id);
+  @UseGuards(AuthGuard())
+  findOne(@Param('id') id: number) {
+    return this.routesService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRouteDto: UpdateRouteDto) {
-    return this.routesService.update(+id, updateRouteDto);
+  @UseGuards(AuthGuard())
+  update(@Param('id') id: number, @Body() updateRouteDto: UpdateRouteDto) {
+    return this.routesService.update(id, updateRouteDto);
   }
-
 
 }
