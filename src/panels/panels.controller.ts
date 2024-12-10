@@ -29,13 +29,17 @@ export class PanelsController {
     return this.panelsService.findOne(uuid);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePanelDto: UpdatePanelDto) {
-    return this.panelsService.update(+id, updatePanelDto);
+  @Patch(':uuid')
+  @UseGuards(AuthGuard())
+  update(@Param('uuid') uuid: string, @Body() updatePanelDto: UpdatePanelDto, @Req() req: Request) {
+    const user_id = req['user'].id;
+    updatePanelDto.user_id = user_id;
+    return this.panelsService.update(uuid, updatePanelDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.panelsService.remove(+id);
+  @Delete(':uuid')
+  @UseGuards(AuthGuard())
+  remove(@Param('uuid') uuid: string) {
+    return this.panelsService.remove(uuid);
   }
 }

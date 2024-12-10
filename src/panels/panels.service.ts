@@ -36,13 +36,26 @@ export class PanelsService {
     return panel;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updatePanelDto: UpdatePanelDto) {
-    return `This action updates a #${id} panel`;
+  async update(uuid: string, updatePanelDto: UpdatePanelDto) {
+    try {
+      const panel = await this.panelRepository.findOneBy({id: uuid});
+      if (!panel) throw new BadRequestException(`Panel with id ${uuid} not found`);
+      this.panelRepository.update(uuid, updatePanelDto);
+      return panel;
+    } catch(error) {
+      this.manageDBExeptions(error)
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} panel`;
+  async remove(uuid: string) {
+    try {
+      const panel = await this.panelRepository.findOneBy({id: uuid});
+      if (!panel) throw new BadRequestException(`Panel with id ${uuid} not found`);
+      this.panelRepository.remove(panel);
+      return `Panel with id ${uuid} has been delete`;
+    }catch(error) {
+      this.manageDBExeptions(error);
+    }
   }
 
   private manageDBExeptions(error: any) {
