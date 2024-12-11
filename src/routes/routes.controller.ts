@@ -32,25 +32,25 @@ export class RoutesController {
   }
 
 
-  @Get('panels')
-  @UseGuards(AuthGuard())
-  @ApiResponse({ status: 200, description: 'Returns all panels', type: Route })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 401, description: 'Forbidden, token reloaded' })
+  // @Get('panels')
+  // @UseGuards(AuthGuard())
+  // @ApiResponse({ status: 200, description: 'Returns all panels', type: Route })
+  // @ApiResponse({ status: 400, description: 'Bad request' })
+  // @ApiResponse({ status: 401, description: 'Forbidden, token reloaded' })
 
-  @Get(':uuid/traffic')
-  @UseGuards(AuthGuard())
+  // @Get(':uuid/traffic')
+  // @UseGuards(AuthGuard())
 
-  @Get(':id')
+  @Get(':uuid')
   @UseGuards(AuthGuard())
-  findOne(@Param('id') id: number) {
-    return this.routesService.findOne(id);
+  findOne(@Param('uuid') uuid: string) {
+    return this.routesService.findOne(uuid);
   }
 
-  @Patch(':id')
+  @Patch(':uuid')
   @UseGuards(AuthGuard())
-  update(@Param('id') id: number, @Body() updateRouteDto: UpdateRouteDto) {
-    return this.routesService.update(id, updateRouteDto);
+  update(@Param('uuid') uuid: string, @Body() updateRouteDto: UpdateRouteDto) {
+    return this.routesService.update(uuid, updateRouteDto);
   }
 
 }

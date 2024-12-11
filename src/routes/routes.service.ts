@@ -17,13 +17,7 @@ import * as cron from 'node-cron';
 @Injectable()
 export class RoutesService {
 
-<<<<<<< HEAD
   private readonly logger = new Logger('PanelsService');
-=======
-  private readonly logger = new Logger('RoutesService');
-
-  constructor(
->>>>>>> 5842161 (Routes controller and services)
 
   constructor(
     @InjectRepository(Route)
@@ -103,7 +97,6 @@ export class RoutesService {
     }
   }
 
-<<<<<<< HEAD
   @Cron('0 */15 * * * *') 
   async actualizarRoutes() {
     try {
@@ -147,73 +140,34 @@ export class RoutesService {
     } catch (error) {
       console.error('Error en actualizarRoutes:', error);
       throw new InternalServerErrorException('Error al actualizar las rutas.');
-=======
-  findAllPanels() {
-    return 'This action view all panels';
-  }
-
-  async create(createRouteDto: CreateRouteDto) {
-    try {
-      const route = this.routeRepository.create(createRouteDto);
-      await this.routeRepository.save(route);
-      return route;
-    } catch(error) {
-      this.manageDBExeptions(error);
->>>>>>> 5842161 (Routes controller and services)
     }
   }
-  
 
-<<<<<<< HEAD
-=======
-  findAll() {
-    const routes = this.routeRepository.find();
-    return routes;
-  }
->>>>>>> 5842161 (Routes controller and services)
-
-  async findOne(id: number) {
+  async findOne(uuid: string) {
     try {
-      const route = await this.routeRepository.findOneBy({id: id});
-      if (!route) throw new BadRequestException(`Message with id ${id} not found`);
+      const route = await this.routeRepository.findOneBy({id: uuid});
+      if (!route) throw new BadRequestException(`Route with id ${uuid} not found`);
       return route;
     } catch(error) {
       this.manageDBExeptions(error);
     }
   }
 
-  async update(id: number, updateRouteDto: UpdateRouteDto) {
+  async update(id: string, updateRouteDto: UpdateRouteDto) {
     try {
       const route = await this.routeRepository.findOneBy({id: id});
-      if (!route) throw new BadRequestException(`Message with id ${id} not found`);
+      if (!route) throw new BadRequestException(`Route with id ${id} not found`);
       return this.routeRepository.update(id, updateRouteDto);
     } catch(error) {
       this.manageDBExeptions(error);
     }
   }
 
-<<<<<<< HEAD
-=======
-  async remove(id: number) {
-    try {
-      const route = await this.routeRepository.findOneBy({id: id});
-      if (!route) throw new BadRequestException(`Message with id ${id} not found`);
-      return this.routeRepository.delete(route);
-    } catch(error) {
-      this.manageDBExeptions(error);
-    }
-  }
-
->>>>>>> 5842161 (Routes controller and services)
   private manageDBExeptions(error: any) {
     this.logger.error(error.message, error.stack);
     if (error.code === '23505') throw new BadRequestException(error.detail);
     throw new InternalServerErrorException('Internal Server Error');
-<<<<<<< HEAD
-
-=======
     
->>>>>>> 5842161 (Routes controller and services)
   }
 
   //realizando las pruebas con cron
