@@ -142,22 +142,32 @@ export class RoutesService {
       throw new InternalServerErrorException('Error al actualizar las rutas.');
     }
   }
-  
 
-
-  findOne(id: number) {
-    return `This action returns a #${id} route`;
+  async findOne(uuid: string) {
+    try {
+      const route = await this.routeRepository.findOneBy({id: uuid});
+      if (!route) throw new BadRequestException(`Route with id ${uuid} not found`);
+      return route;
+    } catch(error) {
+      this.manageDBExeptions(error);
+    }
   }
 
-  update(id: number, updateRouteDto: UpdateRouteDto) {
-    return `This action updates a #${id} route`;
+  async update(id: string, updateRouteDto: UpdateRouteDto) {
+    try {
+      const route = await this.routeRepository.findOneBy({id: id});
+      if (!route) throw new BadRequestException(`Route with id ${id} not found`);
+      return this.routeRepository.update(id, updateRouteDto);
+    } catch(error) {
+      this.manageDBExeptions(error);
+    }
   }
 
   private manageDBExeptions(error: any) {
     this.logger.error(error.message, error.stack);
     if (error.code === '23505') throw new BadRequestException(error.detail);
     throw new InternalServerErrorException('Internal Server Error');
-
+    
   }
 
   //realizando las pruebas con cron

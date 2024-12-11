@@ -21,18 +21,21 @@ export class LanesController {
     return this.lanesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.lanesService.findOne(+id);
+  @Get(':uuid')
+  @UseGuards(AuthGuard())
+  findOne(@Param('uuid') uuid: string) {
+    return this.lanesService.findOne(uuid);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLaneDto: UpdateLaneDto) {
-    return this.lanesService.update(+id, updateLaneDto);
+  @Patch(':uuid')
+  @UseGuards(AuthGuard())
+  update(@Param('uuid') uuid: string, @Body() updateLaneDto: UpdateLaneDto) {
+    return this.lanesService.update(uuid, updateLaneDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.lanesService.remove(+id);
+  @Delete(':uuid')
+  @UseGuards(AuthGuard())
+  remove(@Param('uuid') uuid: string) {
+    return this.lanesService.remove(uuid);
   }
 }
