@@ -34,16 +34,35 @@ export class LanesService {
     return lanes;  
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} lane`;
+  async findOne(uuid: string) {
+    try {
+      const lane = await this.laneRepository.findOneBy({id: uuid});
+      if (!lane) throw new BadRequestException(`Lane with id ${uuid} not found`);
+      return lane;
+    } catch(error) {
+      this.manageDBExeptions(error);
+    }
   }
 
-  update(id: number, updateLaneDto: UpdateLaneDto) {
-    return `This action updates a #${id} lane`;
+  async update(uuid: string, updateLaneDto: UpdateLaneDto) {
+    try {
+      const lane = await this.laneRepository.findOneBy({id: uuid});
+      if (!lane) throw new BadRequestException(`Lane with id ${uuid} not found`);
+      return this.laneRepository.update(uuid, updateLaneDto);
+    } catch(error) {
+      this.manageDBExeptions(error);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} lane`;
+  async remove(uuid: string) {
+    try {
+      const lane = await this.laneRepository.findOneBy({id: uuid});
+      if (!lane) throw new BadRequestException(`Lane with id ${uuid} not found`);
+      this.laneRepository.delete(uuid);
+      return "The lane has been delete";
+    } catch(error) {
+      this.manageDBExeptions(error);
+    }
   }
 
   private manageDBExeptions(error: any) {
