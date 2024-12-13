@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, Logger, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger, InternalServerErrorException, HttpException, HttpStatus } from '@nestjs/common';
 import { CreatePanelDto } from './dto/create-panel.dto';
 import { UpdatePanelDto } from './dto/update-panel.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,15 +16,9 @@ export class PanelsService {
     private panelRepository: Repository<Panel>) {}
   
   async create(createPanelDto: CreatePanelDto) {
-    try{
-      
-      const panel = this.panelRepository.create(createPanelDto);
-      await this.panelRepository.save(panel);    
-      return panel;
-
-    }catch(error){
-      this.manageDBExeptions(error);
-    }
+    const panel = this.panelRepository.create(createPanelDto);
+    await this.panelRepository.save(panel);    
+    return panel;
   }
 
   /*async findAll() {
@@ -161,63 +155,53 @@ export class PanelsService {
     return panel;
   }*/
 
-    async findOne(uuid: string) {
-      const panel = await this.panelRepository.findOne({
-        where: { id: uuid },
-        relations: {
-          lanes: {
-            routes: {
-              details: true,
-            },
+  async findOne(uuid: string) {
+    const panel = await this.panelRepository.findOne({
+      where: { id: uuid },
+      relations: {
+        lanes: {
+          routes: {
+            details: true,
           },
         },
+      }
+    });
+
+    if (!panel) throw new HttpException(`No se logro encontrar el panel con el id ${uuid}`, HttpStatus.NOT_FOUND);
+
+    panel.lanes.forEach(lane => {
+      lane.routes.forEach(route => {
+        route.details = this.getLatestDetail(route.details);
       });
-  
-      if (!panel) throw new BadRequestException(`Panel with id ${uuid} not found`);
-  
-      panel.lanes.forEach(lane => {
-        lane.routes.forEach(route => {
-          route.details = this.getLatestDetail(route.details);
-        });
-      });
-  
-      return panel;
-    }
+    });
+
+    return panel;
+  }
 
   
-    private getLatestDetail(details: any[]): any[] {
-      if (details.length === 0) return [];
-      details.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
-      return [details[0]];
-    }
+  private getLatestDetail(details: any[]): any[] {
+    if (details.length === 0) return [];
+    details.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
+    return [details[0]];
+  }
 
 
   async update(uuid: string, updatePanelDto: UpdatePanelDto) {
-    try {
-      const panel = await this.panelRepository.findOneBy({id: uuid});
-      if (!panel) throw new BadRequestException(`Panel with id ${uuid} not found`);
-      this.panelRepository.update(uuid, updatePanelDto);
-      return panel;
-    } catch(error) {
-      this.manageDBExeptions(error)
-    }
+    const panel = await this.panelRepository.findOneBy({id: uuid});
+    if(!panel) throw new HttpException(`Panel with id ${uuid} not found`,HttpStatus.NOT_FOUND); 
+    return this.panelRepository.update(uuid, updatePanelDto);
   }
 
   async remove(uuid: string) {
-    try {
-      const panel = await this.panelRepository.findOneBy({id: uuid});
-      if (!panel) throw new BadRequestException(`Panel with id ${uuid} not found`);
-      this.panelRepository.remove(panel);
-      return `Panel with id ${uuid} has been delete`;
-    }catch(error) {
-      this.manageDBExeptions(error);
-    }
+    const panel = await this.panelRepository.findOneBy({id: uuid});
+    if (!panel) throw new HttpException(`Panel with id ${uuid} not found`, HttpStatus.NOT_FOUND);
+    this.panelRepository.remove(panel);
+    return `Panel with id ${uuid} has been delete`;
   }
 
   private manageDBExeptions(error: any) {
     this.logger.error(error.message, error.stack);
     if (error.code === '23505') throw new BadRequestException(error.detail);
     throw new InternalServerErrorException('Internal Server Error');
-    
   }
 }
