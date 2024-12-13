@@ -28,13 +28,13 @@ export class Lane {
     @ManyToOne(() => User)
     @JoinColumn({ name: "user_id" })
     user: User;    
-    @Column({ nullable: false })
+    @Column({ nullable: false, select: false })
     user_id: string;
 
-    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", select: false })
     created_at: Date;
 
-    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)", select: false })
     updated_at: Date;
 
     @ManyToOne(() => Panel, panel => panel.lanes, { onDelete: 'CASCADE' })

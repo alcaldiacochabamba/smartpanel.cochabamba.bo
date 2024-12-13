@@ -18,15 +18,9 @@ export class LanesService {
   ){}
 
   async create(createLaneDto: CreateLaneDto) {
-    try {
-
-      const lane = this.laneRepository.create(createLaneDto);
-      await this.laneRepository.save(lane);
-      return lane;
-
-    } catch (error) {
-      this.manageDBExeptions(error);
-    }
+    const lane = this.laneRepository.create(createLaneDto);
+    await this.laneRepository.save(lane);
+    return lane;
   }
 
   findAll() {
@@ -35,34 +29,22 @@ export class LanesService {
   }
 
   async findOne(uuid: string) {
-    try {
-      const lane = await this.laneRepository.findOneBy({id: uuid});
-      if (!lane) throw new BadRequestException(`Lane with id ${uuid} not found`);
-      return lane;
-    } catch(error) {
-      this.manageDBExeptions(error);
-    }
+    const lane = await this.laneRepository.findOneBy({id: uuid});
+    if (!lane) throw new BadRequestException(`No existe la lane con el id ${uuid}`);
+    return lane;
   }
 
   async update(uuid: string, updateLaneDto: UpdateLaneDto) {
-    try {
-      const lane = await this.laneRepository.findOneBy({id: uuid});
-      if (!lane) throw new BadRequestException(`Lane with id ${uuid} not found`);
-      return this.laneRepository.update(uuid, updateLaneDto);
-    } catch(error) {
-      this.manageDBExeptions(error);
-    }
+    const lane = await this.laneRepository.findOneBy({id: uuid});
+    if (!lane) throw new BadRequestException(`No existe la lane con el id ${uuid}`);
+    return this.laneRepository.update(uuid, updateLaneDto);
   }
 
   async remove(uuid: string) {
-    try {
-      const lane = await this.laneRepository.findOneBy({id: uuid});
-      if (!lane) throw new BadRequestException(`Lane with id ${uuid} not found`);
-      this.laneRepository.delete(uuid);
-      return "The lane has been delete";
-    } catch(error) {
-      this.manageDBExeptions(error);
-    }
+    const lane = await this.laneRepository.findOneBy({id: uuid});
+    if (!lane) throw new BadRequestException(`No existe la lane con el id ${uuid}`);
+    this.laneRepository.delete(uuid);
+    return "Se ha eliminado el lane correctamente";
   }
 
   private manageDBExeptions(error: any) {
