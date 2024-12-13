@@ -13,15 +13,10 @@ export class MessagesService {
     private messageRepository: Repository<Message>) {}
 
   async create(createMessageDto: CreateMessageDto) {
-    try{
-      
-      const message = this.messageRepository.create(createMessageDto);
-      await this.messageRepository.save(message);    
-      return message;
-
-    }catch(error){
-      this.manageDBExeptions(error);
-    }  }
+    const message = this.messageRepository.create(createMessageDto);
+    await this.messageRepository.save(message);    
+    return message;
+  }
 
   findAll() {
     const messages = this.messageRepository.find();
@@ -30,29 +25,22 @@ export class MessagesService {
 
   async findOne(uuid: string) {
     const message = await this.messageRepository.findOneBy({ id: uuid });
-    if (!message) throw new BadRequestException(`Message with uuid ${uuid} not found`);
+    if (!message) throw new BadRequestException(`No se encontro el mensaje con el id ${uuid}`);
     return message;
   }
 
   async update(uuid: string, updateMessageDto: UpdateMessageDto) {
-    try {
-      const message = await this.messageRepository.findOneBy({id: uuid});
-      if (!message) throw new BadRequestException(`Message with uuid ${uuid} not found`);
-      return this.messageRepository.update(uuid, updateMessageDto);
-    }catch(error) {
-      this.manageDBExeptions(error)
-    }
+    const message = await this.messageRepository.findOneBy({id: uuid});
+    if (!message) throw new BadRequestException(`No se encontro el mensaje con el id ${uuid}`);
+    return this.messageRepository.update(uuid, updateMessageDto);
+
   }
 
   async remove(uuid: string) {
-    try {
-      const message = await this.messageRepository.findOneBy({id: uuid});
-      if (!message) throw new BadRequestException(`Message with uuid ${uuid} not found`);
-      this.messageRepository.remove(message);
-      return "The message has been delete";
-    }catch(error) {
-      this.manageDBExeptions(error);
-    }
+    const message = await this.messageRepository.findOneBy({id: uuid});
+    if (!message) throw new BadRequestException(`No se encontro el mensaje con el id ${uuid}`);
+    this.messageRepository.remove(message);
+    return "El mensaje ha sido eliminado";
   }
   
   private manageDBExeptions(error: any) {
