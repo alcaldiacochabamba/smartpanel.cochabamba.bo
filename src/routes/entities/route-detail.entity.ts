@@ -41,7 +41,7 @@ export class RouteDetail {
      * Description: Date of route details creation
      * Example: 2022-01-01 8:01:00
      */
-    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', select: false })
     created_at: Date;
 
     /**
@@ -49,7 +49,7 @@ export class RouteDetail {
      * Description: Date of route detail update
      * Example: 2022-01-01 8:01:00
      */
-    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
+    @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)', select: false })
     updated_at: Date;
 
     @ManyToOne(() => Route, (route) => route.details, { onDelete: 'CASCADE' })

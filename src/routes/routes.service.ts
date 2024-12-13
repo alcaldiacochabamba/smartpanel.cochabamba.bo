@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import axios from 'axios';
@@ -11,7 +11,6 @@ import { Lane } from 'src/lanes/entities/lane.entity';
 import { CreateLaneDto } from 'src/lanes/dto/create-lane.dto';
 import { Cron,CronExpression  } from '@nestjs/schedule';
 import * as cron from 'node-cron';
-
 
 
 @Injectable()
@@ -36,33 +35,22 @@ export class RoutesService {
   }
 
   async create(createRouteDto: CreateRouteDto) {
-
-    try {
-
-      const route = this.routeRepository.create(createRouteDto);
-      route.departure_time = "now";
-      route.traffic_model = "best_guess";
-      await this.routeRepository.save(route);
-      let routeList = [];
-      routeList.push(await this.getRouteMapsGoogle(route.id));
-      route.details = routeList;
-      await this.routeRepository.save(route);
-      return route;
-
-    } catch (error) {
-      this.manageDBExeptions(error);
-    }
+    const route = this.routeRepository.create(createRouteDto);
+    route.departure_time = "now";
+    route.traffic_model = "best_guess";
+    await this.routeRepository.save(route);
+    // let routeList = [];
+    // routeList.push(await this.getRouteMapsGoogle(route.id));
+    // route.details = routeList;
+    // await this.routeRepository.save(route);
+    return route;
   }
 
-  async remove(uuid: string): Promise<{ message: string; }> {
+  async remove(uuid: string) {
     const route = await this.routeRepository.findOneBy({ id: uuid });
-
-    if (!route) {
-      throw new BadRequestException(`Route with uuid ${uuid} not found`);
-    }
-
+    if (!route) throw new HttpException(`No se ha logrado encontrar la ruta con el id ${uuid}`, HttpStatus.NOT_FOUND);
     await this.routeRepository.remove(route);
-    return { message: 'Route successfully removed' };
+    return "La ruta se ha eliminado correctamente";
   }
 
 
@@ -144,32 +132,20 @@ export class RoutesService {
   }
 
   async findOne(uuid: string) {
-    try {
-      const route = await this.routeRepository.findOneBy({id: uuid});
-      if (!route) throw new BadRequestException(`Route with id ${uuid} not found`);
-      return route;
-    } catch(error) {
-      this.manageDBExeptions(error);
-    }
+    const route = await this.routeRepository.findOneBy({id: uuid});
+    if (!route) throw new HttpException(`No se ha logrado encontrar la ruta con el id ${uuid}`, HttpStatus.NOT_FOUND);
+    return route;
   }
 
-  async update(id: string, updateRouteDto: UpdateRouteDto) {
-    try {
-      const route = await this.routeRepository.findOneBy({id: id});
-      if (!route) throw new BadRequestException(`Route with id ${id} not found`);
-      return this.routeRepository.update(id, updateRouteDto);
-    } catch(error) {
-      this.manageDBExeptions(error);
-    }
+  async update(uuid: string, updateRouteDto: UpdateRouteDto) {
+    const route = await this.routeRepository.findOneBy({id: uuid});
+    if (!route) throw new HttpException(`No se ha logrado encontrar la ruta con el id ${uuid}`, HttpStatus.NOT_FOUND);
+    return this.routeRepository.update(uuid, updateRouteDto);
   }
 
   private manageDBExeptions(error: any) {
     this.logger.error(error.message, error.stack);
     if (error.code === '23505') throw new BadRequestException(error.detail);
     throw new InternalServerErrorException('Internal Server Error');
-    
-  }
-
-  //realizando las pruebas con cron
-  
+  }  
 }
