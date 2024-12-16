@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import axios from 'axios';
@@ -11,7 +11,7 @@ import { Lane } from 'src/lanes/entities/lane.entity';
 import { CreateLaneDto } from 'src/lanes/dto/create-lane.dto';
 import { Cron,CronExpression  } from '@nestjs/schedule';
 import * as cron from 'node-cron';
-
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
 
 @Injectable()
@@ -29,44 +29,47 @@ export class RoutesService {
   ) { }
 
  
-
-  findAll() {
-    const routes = this.routeRepository.find();
-    return routes;
+  public async list(query: PaginateQuery): Promise<Paginated<Route>> { 
+    return await paginate(query, this.routeRepository, {
+      sortableColumns: ['id', 'title'],
+      nullSort: 'last',
+      defaultSortBy: [['title', 'ASC']],
+      searchableColumns: ['id','title'],
+      select: ['id', 'title', 'destination', 'mode', 'departure_time', 'traffic_model', 'order']
+    });
+  }
+  
+  public async store(createRouteDto: CreateRouteDto) {
+    const route = this.routeRepository.create(createRouteDto);
+    route.departure_time = "now";
+    route.traffic_model = "best_guess";
+    await this.routeRepository.save(route);
+    let routeList = [];
+    routeList.push(await this.getRouteMapsGoogle(route.id));
+    route.details = routeList;
+    await this.routeRepository.save(route);
+    return route;
   }
 
-  async create(createRouteDto: CreateRouteDto) {
-
-    try {
-
-      const route = this.routeRepository.create(createRouteDto);
-      route.departure_time = "now";
-      route.traffic_model = "best_guess";
-      await this.routeRepository.save(route);
-      let routeList = [];
-      routeList.push(await this.getRouteMapsGoogle(route.id));
-      route.details = routeList;
-      await this.routeRepository.save(route);
-      return route;
-
-    } catch (error) {
-      this.manageDBExeptions(error);
-    }
+  public async show(uuid: string) {
+    if (!await this.routeRepository.existsBy({id: uuid})) throw new HttpException(`No se ha logrado encontrar la ruta con el id ${uuid}`, HttpStatus.NOT_FOUND);
+    return await this.routeRepository.findOneBy({id: uuid});
   }
 
-  async remove(uuid: string): Promise<{ message: string; }> {
+  public async update(uuid: string, updateRouteDto: UpdateRouteDto) {
+    if (!await this.routeRepository.existsBy({id: uuid})) throw new HttpException(`No se ha logrado encontrar la ruta con el id ${uuid}`, HttpStatus.NOT_FOUND);
+    await this.routeRepository.update(uuid, updateRouteDto);
+    return this.routeRepository.findOneBy({id: uuid});
+  }
+
+  public async destroy(uuid: string) {
     const route = await this.routeRepository.findOneBy({ id: uuid });
-
-    if (!route) {
-      throw new BadRequestException(`Route with uuid ${uuid} not found`);
-    }
-
+    if (!route) throw new HttpException(`No se ha logrado encontrar la ruta con el id ${uuid}`, HttpStatus.NOT_FOUND);
     await this.routeRepository.remove(route);
-    return { message: 'Route successfully removed' };
+    return "La ruta se ha eliminado correctamente";
   }
 
-
-  async getRouteMapsGoogle(route_id: string) {
+  private async getRouteMapsGoogle(route_id: string) {
     const apiKey = 'AIzaSyBlnKdEioRJV1_Vnc2iXhVnOP5H_lxRVWM'; // Reemplaza con tu propia clave de API de Google Maps
     const rutaLane = await this.routeRepository.findOne({ where: { id: route_id }, relations: ['lane', 'lane.panel'] });
     const { destination, mode, departure_time, traffic_model, lane } = rutaLane;
@@ -98,7 +101,7 @@ export class RoutesService {
   }
 
   @Cron('0 */15 * * * *') 
-  async actualizarRoutes() {
+  private async updatingRoutes() {
     try {
       const apiKey = 'AIzaSyBlnKdEioRJV1_Vnc2iXhVnOP5H_lxRVWM';
       // Obtener todos los paneles activos
@@ -143,33 +146,9 @@ export class RoutesService {
     }
   }
 
-  async findOne(uuid: string) {
-    try {
-      const route = await this.routeRepository.findOneBy({id: uuid});
-      if (!route) throw new BadRequestException(`Route with id ${uuid} not found`);
-      return route;
-    } catch(error) {
-      this.manageDBExeptions(error);
-    }
-  }
-
-  async update(id: string, updateRouteDto: UpdateRouteDto) {
-    try {
-      const route = await this.routeRepository.findOneBy({id: id});
-      if (!route) throw new BadRequestException(`Route with id ${id} not found`);
-      return this.routeRepository.update(id, updateRouteDto);
-    } catch(error) {
-      this.manageDBExeptions(error);
-    }
-  }
-
   private manageDBExeptions(error: any) {
     this.logger.error(error.message, error.stack);
     if (error.code === '23505') throw new BadRequestException(error.detail);
     throw new InternalServerErrorException('Internal Server Error');
-    
-  }
-
-  //realizando las pruebas con cron
-  
+  }  
 }

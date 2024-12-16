@@ -38,7 +38,7 @@ export class Route {
        @ManyToOne(() => User)
        @JoinColumn({ name: "user_id" })
        user: User;    
-       @Column({ nullable: true })
+       @Column({ nullable: true, select:false })
        user_id: string;
    
     
@@ -47,7 +47,7 @@ export class Route {
      * description: Fecha de creacion del ruta
      * example: 2022-01-01 8:01:00
      */
-    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", select: false })
     created_at: Date;
 
     /**
@@ -55,7 +55,7 @@ export class Route {
      * description: Fecha de actualizacion del ruta
      * example: 2022-01-01 8:01:00
      */
-    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)", select: false })
     updated_at: Date;
 
     @OneToMany(() => RouteDetail, routedetail => routedetail.route,
@@ -70,6 +70,6 @@ export class Route {
     @JoinColumn({ name: 'lane_id' })
     lane: Lane;
 
-    @Column()
+    @Column({select: false})
     lane_id: string;
 }

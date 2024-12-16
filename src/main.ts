@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,10 +19,12 @@ async function bootstrap() {
   .setVersion('1.0')
   .addTag('panels')
   .build();
-app.enableCors(); // Habilita CORS para todas las rutas
-const document = SwaggerModule.createDocument(app, config);
-SwaggerModule.setup('api/docs', app, document);
+  app.enableCors(); // Habilita CORS para todas las rutas
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
   await app.listen(3000);
-  
+  useContainer(app.select(AppModule), { fallbackOnErrors: true })
+
 }
 bootstrap();
+

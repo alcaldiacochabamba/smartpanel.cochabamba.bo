@@ -64,7 +64,7 @@ export class Message {
        @ManyToOne(() => User)
        @JoinColumn({ name: "user_id" })
        user: User;    
-       @Column({ nullable: false })
+       @Column({ nullable: false, select: false })
        user_id: string;
        
 
@@ -73,7 +73,7 @@ export class Message {
      * description: Fecha de creacion del panel
      * example: 2022-01-01 8:01:00
      */
-    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", select: false })
     created_at: Date;
 
     /**
@@ -81,13 +81,13 @@ export class Message {
      * description: Fecha de actualizacion del panel
      * example: 2022-01-01 8:01:00
      */
-    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)", select: false })
     updated_at: Date;
 
     @ManyToOne(() => Panel, panel => panel.messages, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'panel_id' })
     panel: Panel
-    @Column()
+    @Column({ select: false})
     panel_id: string
 
 

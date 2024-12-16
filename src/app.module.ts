@@ -12,9 +12,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LanesModule } from './lanes/lanes.module';
 import { ScheduleModule } from '@nestjs/schedule';
-
-
-
+import { HandlerModule } from './handler/handler.module';
+import { IsUnique } from './validations/is-unique.validator';
 
 @Module({
   imports: [
@@ -38,9 +37,10 @@ import { ScheduleModule } from '@nestjs/schedule';
     PanelsModule,
     MessagesModule,
     LanesModule,
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
+    HandlerModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, IsUnique],
 })
 export class AppModule { }

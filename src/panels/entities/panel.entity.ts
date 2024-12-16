@@ -3,6 +3,7 @@ import { User } from "src/auth/entities/users.entity";
 import { Message } from "src/messages/entities/message.entity";
 import { Route } from "src/routes/entities/route.entity";
 import { Lane } from "src/lanes/entities/lane.entity";
+import { Exclude } from "class-transformer";
 
 
 @Entity({ name: 'panels' })
@@ -47,10 +48,11 @@ export class Panel {
      * description: Usuario creador del panel
      * example: <uuid>
     */
+    @Exclude()
     @ManyToOne(() => User)
     @JoinColumn({ name: "user_id" })
     user: User;    
-    @Column({ nullable: false })
+    @Column({ nullable: false, select:false })
     user_id: string;
 
     /**
@@ -58,7 +60,8 @@ export class Panel {
      * description: Fecha de creacion del panel
      * example: 2022-01-01 8:01:00
      */
-    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+    @Exclude()
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", select:false })
     created_at: Date;
 
     /**
@@ -66,13 +69,13 @@ export class Panel {
      * description: Fecha de actualizacion del panel
      * example: 2022-01-01 8:01:00
      */
-    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+    @Exclude()
+    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)", select: false })
     updated_at: Date;
     
     @OneToMany(() => Lane, lane => lane.panel,{
         cascade: true,
-        eager: true,
-
+        eager: false,
     })
     lanes: Lane[];
 
@@ -80,8 +83,7 @@ export class Panel {
     @OneToMany(() => Message, message => message.panel,
     {
         cascade: true,
-        eager: true,
-
+        eager: false,
     })    
     messages?: Message[];    
 }

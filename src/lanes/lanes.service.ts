@@ -4,6 +4,7 @@ import { UpdateLaneDto } from './dto/update-lane.dto';
 import { DataSource, Repository } from 'typeorm';
 import { Lane } from './entities/lane.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
 
 @Injectable()
@@ -17,52 +18,38 @@ export class LanesService {
 
   ){}
 
-  async create(createLaneDto: CreateLaneDto) {
-    try {
-
-      const lane = this.laneRepository.create(createLaneDto);
-      await this.laneRepository.save(lane);
-      return lane;
-
-    } catch (error) {
-      this.manageDBExeptions(error);
-    }
+  public async list(query: PaginateQuery): Promise<Paginated<Lane>> {
+    return await paginate(query, this.laneRepository, {
+      sortableColumns: ['id', 'name', 'lane_number', 'orientation'],
+      nullSort: 'last',
+      defaultSortBy: [['name', 'ASC']],
+      searchableColumns: ['id', 'name', 'lane_number', 'orientation'],
+      select: ['id', 'name', 'lane_number', 'orientation']
+    })
   }
 
-  findAll() {
-    const lanes = this.laneRepository.find();
-    return lanes;  
+  public async store(createLaneDto: CreateLaneDto) {
+    return await this.laneRepository.save(
+      this.laneRepository.create(createLaneDto)
+    );
   }
 
-  async findOne(uuid: string) {
-    try {
-      const lane = await this.laneRepository.findOneBy({id: uuid});
-      if (!lane) throw new BadRequestException(`Lane with id ${uuid} not found`);
-      return lane;
-    } catch(error) {
-      this.manageDBExeptions(error);
-    }
+  public async show(uuid: string) {
+    if (!await this.laneRepository.existsBy({id: uuid})) throw new BadRequestException(`No existe el lane con el id ${uuid}`);
+    return await this.laneRepository.findOneBy({id: uuid});
   }
 
-  async update(uuid: string, updateLaneDto: UpdateLaneDto) {
-    try {
-      const lane = await this.laneRepository.findOneBy({id: uuid});
-      if (!lane) throw new BadRequestException(`Lane with id ${uuid} not found`);
-      return this.laneRepository.update(uuid, updateLaneDto);
-    } catch(error) {
-      this.manageDBExeptions(error);
-    }
+  public async update(uuid: string, updateLaneDto: UpdateLaneDto) {
+    if (!await this.laneRepository.existsBy({id: uuid})) throw new BadRequestException(`No existe el lane con el id ${uuid}`);
+    await this.laneRepository.update(uuid, updateLaneDto);
+    return await this.laneRepository.findOneBy({id: uuid});
   }
 
-  async remove(uuid: string) {
-    try {
-      const lane = await this.laneRepository.findOneBy({id: uuid});
-      if (!lane) throw new BadRequestException(`Lane with id ${uuid} not found`);
-      this.laneRepository.delete(uuid);
-      return "The lane has been delete";
-    } catch(error) {
-      this.manageDBExeptions(error);
-    }
+  public async destroy(uuid: string) {
+    const lane = await this.laneRepository.findOneBy({id: uuid});
+    if (!lane) throw new BadRequestException(`No existe el lane con el id ${uuid}`);
+    this.laneRepository.delete(uuid);
+    return "Se ha eliminado el lane correctamente";
   }
 
   private manageDBExeptions(error: any) {
