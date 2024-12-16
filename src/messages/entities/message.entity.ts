@@ -87,7 +87,7 @@ export class Message {
     @ManyToOne(() => Panel, panel => panel.messages, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'panel_id' })
     panel: Panel
-    @Column()
+    @Column({ select: false})
     panel_id: string
 
 
