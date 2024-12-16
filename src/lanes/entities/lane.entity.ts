@@ -41,11 +41,11 @@ export class Lane {
     @JoinColumn({ name: 'panel_id' })
     panel: Panel;
 
-    @Column()
+    @Column({select: false})
     panel_id:string;
     @OneToMany(() => Route, route => route.lane,{
         cascade: true,
-        eager: true,
+        eager: false,
 
     })
     routes: Route[];

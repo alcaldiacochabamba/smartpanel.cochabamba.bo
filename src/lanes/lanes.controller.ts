@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { LanesService } from './lanes.service';
 import { CreateLaneDto } from './dto/create-lane.dto';
 import { UpdateLaneDto } from './dto/update-lane.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { HandlerService } from 'src/handler/handler.service';
+import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { Lane } from './entities/lane.entity';
 
 
 @Controller('api/v1/lanes')
@@ -13,11 +15,29 @@ export class LanesController {
     private readonly _handlerService: HandlerService
   ) {}
 
+  @Get()
+  @UseGuards(AuthGuard())
+  public list(
+    @Paginate() query: PaginateQuery
+  ): Promise<Paginated<Lane>> {
+    return this.lanesService.list(query)
+    .catch(error => {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.response || "An error occurred",
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    });
+  }
+
   @Post()
   @UseGuards(AuthGuard())
-  create(@Body() createLaneDto: CreateLaneDto) {
-    return this.lanesService.create(createLaneDto)
-    .then(lane => {
+  store(@Body(ValidationPipe) createLaneDto: CreateLaneDto) {
+    return this.lanesService.store(createLaneDto)
+    .then(response => {
+      const { created_at, updated_at, user_id, ...lane} = response
       return this._handlerService.sendResponse(
         "Se ha registrado correctamente el lane",
         lane
@@ -34,16 +54,10 @@ export class LanesController {
     });
   }
 
-  @Get()
-  @UseGuards(AuthGuard())
-  findAll() {
-    return this.lanesService.findAll();
-  }
-
   @Get(':uuid')
   @UseGuards(AuthGuard())
-  findOne(@Param('uuid') uuid: string) {
-    return this.lanesService.findOne(uuid)
+  show(@Param('uuid') uuid: string) {
+    return this.lanesService.show(uuid)
     .then(lane => {
       return this._handlerService.sendResponse(
         "Se ha obtenido el lane correctamente",
@@ -63,7 +77,10 @@ export class LanesController {
 
   @Patch(':uuid')
   @UseGuards(AuthGuard())
-  update(@Param('uuid') uuid: string, @Body() updateLaneDto: UpdateLaneDto) {
+  update(
+    @Param('uuid') uuid: string, 
+    @Body(ValidationPipe) updateLaneDto: UpdateLaneDto
+  ) {
     return this.lanesService.update(uuid, updateLaneDto)
     .then(lane => {
       return this._handlerService.sendResponse(
@@ -84,8 +101,8 @@ export class LanesController {
 
   @Delete(':uuid')
   @UseGuards(AuthGuard())
-  remove(@Param('uuid') uuid: string) {
-    return this.lanesService.remove(uuid)
+  destroy(@Param('uuid') uuid: string) {
+    return this.lanesService.destroy(uuid)
     .then(() => {
       return this._handlerService.sendResponse(
         "Se ha eliminado el lane correctamente"
