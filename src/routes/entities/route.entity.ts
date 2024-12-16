@@ -11,7 +11,7 @@ export class Route {
     id: string;
 
     @ApiProperty()
-    @Column('text', { nullable: false })
+    @Column('text', { nullable: false, unique: true })
     title: string;
 
     @ApiProperty()

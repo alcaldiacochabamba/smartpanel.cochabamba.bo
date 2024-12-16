@@ -10,7 +10,7 @@ export class Lane {
     id:string;
 
     //@ApiProperty()
-    @Column('text',{nullable:false})
+    @Column('text',{nullable:false, unique: true})
     name:string;
 
     @Column('integer',{nullable:false})
