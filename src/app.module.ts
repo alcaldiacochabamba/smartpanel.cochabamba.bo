@@ -14,7 +14,7 @@ import { LanesModule } from './lanes/lanes.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HandlerModule } from './handler/handler.module';
 import { IsUnique } from './validations/is-unique.validator';
-
+import { WebsocketsModule } from './websockets/websockets.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -38,7 +38,8 @@ import { IsUnique } from './validations/is-unique.validator';
     MessagesModule,
     LanesModule,
     ScheduleModule.forRoot(),
-    HandlerModule
+    HandlerModule,
+    WebsocketsModule
   ],
   controllers: [AppController],
   providers: [AppService, IsUnique],
