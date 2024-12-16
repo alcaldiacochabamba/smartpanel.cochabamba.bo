@@ -70,6 +70,6 @@ export class Route {
     @JoinColumn({ name: 'lane_id' })
     lane: Lane;
 
-    @Column()
+    @Column({select: false})
     lane_id: string;
 }

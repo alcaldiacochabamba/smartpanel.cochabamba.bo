@@ -56,6 +56,6 @@ export class RouteDetail {
     @JoinColumn({ name: 'route_id' })
     route: Route;
 
-    @Column()
+    @Column({ select: false})
     route_id: string;
 }

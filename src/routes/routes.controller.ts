@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Logger, Query, HttpCode, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Logger, Query, HttpCode, HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { RoutesService } from './routes.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
@@ -6,6 +6,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Route } from './entities/route.entity';
 import { HandlerService } from 'src/handler/handler.service';
+import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { query } from 'express';
 
 @ApiTags('Routes')
 @ApiSecurity('basic')
@@ -19,15 +21,27 @@ export class RoutesController {
 
   @Get()
   @UseGuards(AuthGuard())
-  findAll() {
-    return this.routesService.findAll();
+  public list(
+    @Paginate() query: PaginateQuery
+  ): Promise<Paginated<Route>> {
+    return this.routesService.list(query)
+    .catch(error => {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.response || "An error occurred",
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    });
   }
 
   @Post()
   @UseGuards(AuthGuard())
-  create(@Body() createRouteDto: CreateRouteDto) {
-    return this.routesService.create(createRouteDto)
-    .then(route => {
+  store(@Body(ValidationPipe) createRouteDto: CreateRouteDto) {
+    return this.routesService.store(createRouteDto)
+    .then(response => {
+      const { created_at, updated_at, user_id, ...route} = response
       return this._handlerService.sendResponse(
         "Se ha registrado correctamente la ruta",
         route
@@ -44,10 +58,55 @@ export class RoutesController {
     });
   }
 
+  @Get(':uuid')
+  @UseGuards(AuthGuard())
+  public show(@Param('uuid') uuid: string) {
+    return this.routesService.show(uuid)
+    .then(route => {
+      return this._handlerService.sendResponse(
+        "Se ha obtenido la ruta correctamente",
+        route
+      )
+    })
+    .catch(error => {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.response || "Ha ocurrido un problema",
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    });
+  }
+
+  @Patch(':uuid')
+  @UseGuards(AuthGuard())
+  update(
+    @Param('uuid') uuid: string, 
+    @Body(ValidationPipe) updateRouteDto: UpdateRouteDto
+  ) {
+    return this.routesService.update(uuid, updateRouteDto)
+    .then(route => {
+      return this._handlerService.sendResponse(
+        "Se ha actualizado la ruta correctamente",
+        route
+      )
+    })
+    .catch(error => {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.response || "Ha ocurrido un problema",
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    });
+  }
+
   @Delete(':uuid')
   @HttpCode(200)
-  remove(@Param('uuid') uuid: string) {
-    return this.routesService.remove(uuid)
+  public destroy(@Param('uuid') uuid: string) {
+    return this.routesService.destroy(uuid)
     .then(() => {
       return this._handlerService.sendResponse(
         "Se ha eliminado la ruta correctamente"
@@ -73,47 +132,5 @@ export class RoutesController {
 
   // @Get(':uuid/traffic')
   // @UseGuards(AuthGuard())
-
-  @Get(':uuid')
-  @UseGuards(AuthGuard())
-  findOne(@Param('uuid') uuid: string) {
-    return this.routesService.findOne(uuid)
-    .then(route => {
-      return this._handlerService.sendResponse(
-        "Se ha obtenido la ruta correctamente",
-        route
-      )
-    })
-    .catch(error => {
-      throw new HttpException(
-        {
-          success: false,
-          message: error.response || "Ha ocurrido un problema",
-        },
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    });
-  }
-
-  @Patch(':uuid')
-  @UseGuards(AuthGuard())
-  update(@Param('uuid') uuid: string, @Body() updateRouteDto: UpdateRouteDto) {
-    return this.routesService.update(uuid, updateRouteDto)
-    .then(route => {
-      return this._handlerService.sendResponse(
-        "Se ha actualizado la ruta correctamente",
-        route
-      )
-    })
-    .catch(error => {
-      throw new HttpException(
-        {
-          success: false,
-          message: error.response || "Ha ocurrido un problema",
-        },
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    });
-  }
 
 }

@@ -11,6 +11,7 @@ import { Lane } from 'src/lanes/entities/lane.entity';
 import { CreateLaneDto } from 'src/lanes/dto/create-lane.dto';
 import { Cron,CronExpression  } from '@nestjs/schedule';
 import * as cron from 'node-cron';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
 
 @Injectable()
@@ -28,13 +29,17 @@ export class RoutesService {
   ) { }
 
  
-
-  findAll() {
-    const routes = this.routeRepository.find();
-    return routes;
+  public async list(query: PaginateQuery): Promise<Paginated<Route>> { 
+    return await paginate(query, this.routeRepository, {
+      sortableColumns: ['id', 'title'],
+      nullSort: 'last',
+      defaultSortBy: [['title', 'ASC']],
+      searchableColumns: ['id','title'],
+      select: ['id', 'title', 'destination', 'mode', 'departure_time', 'traffic_model', 'order']
+    });
   }
-
-  async create(createRouteDto: CreateRouteDto) {
+  
+  public async store(createRouteDto: CreateRouteDto) {
     const route = this.routeRepository.create(createRouteDto);
     route.departure_time = "now";
     route.traffic_model = "best_guess";
@@ -46,7 +51,18 @@ export class RoutesService {
     return route;
   }
 
-  async remove(uuid: string) {
+  public async show(uuid: string) {
+    if (!await this.routeRepository.existsBy({id: uuid})) throw new HttpException(`No se ha logrado encontrar la ruta con el id ${uuid}`, HttpStatus.NOT_FOUND);
+    return await this.routeRepository.findOneBy({id: uuid});
+  }
+
+  public async update(uuid: string, updateRouteDto: UpdateRouteDto) {
+    if (!await this.routeRepository.existsBy({id: uuid})) throw new HttpException(`No se ha logrado encontrar la ruta con el id ${uuid}`, HttpStatus.NOT_FOUND);
+    await this.routeRepository.update(uuid, updateRouteDto);
+    return this.routeRepository.findOneBy({id: uuid});
+  }
+
+  public async destroy(uuid: string) {
     const route = await this.routeRepository.findOneBy({ id: uuid });
     if (!route) throw new HttpException(`No se ha logrado encontrar la ruta con el id ${uuid}`, HttpStatus.NOT_FOUND);
     await this.routeRepository.remove(route);
@@ -129,18 +145,6 @@ export class RoutesService {
       console.error('Error en actualizarRoutes:', error);
       throw new InternalServerErrorException('Error al actualizar las rutas.');
     }
-  }
-
-  async findOne(uuid: string) {
-    const route = await this.routeRepository.findOneBy({id: uuid});
-    if (!route) throw new HttpException(`No se ha logrado encontrar la ruta con el id ${uuid}`, HttpStatus.NOT_FOUND);
-    return route;
-  }
-
-  async update(uuid: string, updateRouteDto: UpdateRouteDto) {
-    const route = await this.routeRepository.findOneBy({id: uuid});
-    if (!route) throw new HttpException(`No se ha logrado encontrar la ruta con el id ${uuid}`, HttpStatus.NOT_FOUND);
-    return this.routeRepository.update(uuid, updateRouteDto);
   }
 
   private manageDBExeptions(error: any) {
