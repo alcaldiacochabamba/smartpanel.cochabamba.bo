@@ -17,7 +17,7 @@ export class MessagesController {
 
   @Get()
   @UseGuards(AuthGuard())
-  findAll(
+  public list(
     @Paginate() query: PaginateQuery
   ): Promise<Paginated<Message>> {
     return this.messagesService.list(query)
@@ -35,7 +35,7 @@ export class MessagesController {
 
   @Post()
   @UseGuards(AuthGuard())
-  store(
+  public store(
     @Body() createMessageDto: CreateMessageDto,
     @Req() req: Request
   ) {
@@ -63,7 +63,7 @@ export class MessagesController {
 
   @Get(':uuid')
   @UseGuards(AuthGuard())
-  show(@Param('uuid') uuid: string) {
+  public show(@Param('uuid') uuid: string) {
     return this.messagesService.show(uuid)
     .then(message => {
       return this._handlerService.sendResponse(
@@ -84,7 +84,11 @@ export class MessagesController {
 
   @Patch(':uuid')
   @UseGuards(AuthGuard())
-  update(@Param('uuid') uuid: string, @Body() updateMessageDto: UpdateMessageDto, @Req() req: Request) {
+  public update(
+    @Param('uuid') uuid: string, 
+    @Body() updateMessageDto: UpdateMessageDto, 
+    @Req() req: Request
+  ) {
     updateMessageDto.user_id = req['user'].id;
     return this.messagesService.update(uuid, updateMessageDto)
     .then(message => {
@@ -106,7 +110,7 @@ export class MessagesController {
 
   @Delete(':uuid')
   @UseGuards(AuthGuard())
-  destroy(@Param('uuid') uuid: string) {
+  public destroy(@Param('uuid') uuid: string) {
     return this.messagesService.destroy(uuid)
     .then(() => {
       return this._handlerService.sendResponse(

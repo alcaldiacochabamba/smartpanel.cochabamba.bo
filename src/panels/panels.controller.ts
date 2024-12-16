@@ -59,7 +59,7 @@ export class PanelsController {
 
   @Get(':uuid')
   @UseGuards(AuthGuard())
-  show(@Param('uuid') uuid: string) {
+  public show(@Param('uuid') uuid: string) {
     return this.panelsService.show(uuid)
     .then(panel => {
       return this._handlerService.sendResponse(
@@ -80,7 +80,7 @@ export class PanelsController {
 
   @Patch(':uuid')
   @UseGuards(AuthGuard())
-  update(
+  public update(
     @Param('uuid') uuid: string, 
     @Body(ValidationPipe) updatePanelDto: UpdatePanelDto, 
     @Req() req: Request
@@ -106,7 +106,7 @@ export class PanelsController {
 
   @Delete(':uuid')
   @UseGuards(AuthGuard())
-  destroy(@Param('uuid') uuid: string) {
+  public destroy(@Param('uuid') uuid: string) {
     return this.panelsService.destroy(uuid)
     .then(() => {
       return this._handlerService.sendResponse(

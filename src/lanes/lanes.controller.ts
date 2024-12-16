@@ -34,7 +34,7 @@ export class LanesController {
 
   @Post()
   @UseGuards(AuthGuard())
-  store(@Body(ValidationPipe) createLaneDto: CreateLaneDto) {
+  public store(@Body(ValidationPipe) createLaneDto: CreateLaneDto) {
     return this.lanesService.store(createLaneDto)
     .then(response => {
       const { created_at, updated_at, user_id, ...lane} = response
@@ -56,7 +56,7 @@ export class LanesController {
 
   @Get(':uuid')
   @UseGuards(AuthGuard())
-  show(@Param('uuid') uuid: string) {
+  public show(@Param('uuid') uuid: string) {
     return this.lanesService.show(uuid)
     .then(lane => {
       return this._handlerService.sendResponse(
@@ -77,7 +77,7 @@ export class LanesController {
 
   @Patch(':uuid')
   @UseGuards(AuthGuard())
-  update(
+  public update(
     @Param('uuid') uuid: string, 
     @Body(ValidationPipe) updateLaneDto: UpdateLaneDto
   ) {
@@ -101,7 +101,7 @@ export class LanesController {
 
   @Delete(':uuid')
   @UseGuards(AuthGuard())
-  destroy(@Param('uuid') uuid: string) {
+  public destroy(@Param('uuid') uuid: string) {
     return this.lanesService.destroy(uuid)
     .then(() => {
       return this._handlerService.sendResponse(

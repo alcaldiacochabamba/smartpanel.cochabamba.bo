@@ -13,6 +13,7 @@ import { query } from 'express';
 @ApiSecurity('basic')
 @Controller('api/v1/routes')
 export class RoutesController {
+  
   constructor(
     private readonly routesService: RoutesService,
     private readonly _handlerService: HandlerService
@@ -38,7 +39,9 @@ export class RoutesController {
 
   @Post()
   @UseGuards(AuthGuard())
-  store(@Body(ValidationPipe) createRouteDto: CreateRouteDto) {
+  public store(
+    @Body(ValidationPipe) createRouteDto: CreateRouteDto
+  ) {
     return this.routesService.store(createRouteDto)
     .then(response => {
       const { created_at, updated_at, user_id, ...route} = response
@@ -81,7 +84,7 @@ export class RoutesController {
 
   @Patch(':uuid')
   @UseGuards(AuthGuard())
-  update(
+  public update(
     @Param('uuid') uuid: string, 
     @Body(ValidationPipe) updateRouteDto: UpdateRouteDto
   ) {
@@ -104,7 +107,7 @@ export class RoutesController {
   }
 
   @Delete(':uuid')
-  @HttpCode(200)
+  @UseGuards(AuthGuard())
   public destroy(@Param('uuid') uuid: string) {
     return this.routesService.destroy(uuid)
     .then(() => {
