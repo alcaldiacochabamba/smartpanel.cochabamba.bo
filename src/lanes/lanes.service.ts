@@ -35,19 +35,19 @@ export class LanesService {
   }
 
   public async show(uuid: string) {
-    if (!await this.laneRepository.existsBy({id: uuid})) throw new BadRequestException(`No existe la lane con el id ${uuid}`);
+    if (!await this.laneRepository.existsBy({id: uuid})) throw new BadRequestException(`No existe el lane con el id ${uuid}`);
     return await this.laneRepository.findOneBy({id: uuid});
   }
 
   public async update(uuid: string, updateLaneDto: UpdateLaneDto) {
-    if (!await this.laneRepository.existsBy({id: uuid})) throw new BadRequestException(`No existe la lane con el id ${uuid}`);
+    if (!await this.laneRepository.existsBy({id: uuid})) throw new BadRequestException(`No existe el lane con el id ${uuid}`);
     await this.laneRepository.update(uuid, updateLaneDto);
     return await this.laneRepository.findOneBy({id: uuid});
   }
 
   public async destroy(uuid: string) {
     const lane = await this.laneRepository.findOneBy({id: uuid});
-    if (!lane) throw new BadRequestException(`No existe la lane con el id ${uuid}`);
+    if (!lane) throw new BadRequestException(`No existe el lane con el id ${uuid}`);
     this.laneRepository.delete(uuid);
     return "Se ha eliminado el lane correctamente";
   }
