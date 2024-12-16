@@ -4,6 +4,8 @@ import { CreatePanelDto } from './dto/create-panel.dto';
 import { UpdatePanelDto } from './dto/update-panel.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { HandlerService } from 'src/handler/handler.service';
+import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { Panel } from './entities/panel.entity';
 
 @Controller('api/v1/panels')
 export class PanelsController {
@@ -12,17 +14,12 @@ export class PanelsController {
     private readonly _handlerService: HandlerService
   ) {}
 
-  @Post()
+  @Get()
   @UseGuards(AuthGuard())
-  create(@Body(ValidationPipe) createPanelDto: CreatePanelDto ,@Req() req: Request) {
-    createPanelDto.user_id = req['user'].id;
-    return this.panelsService.create(createPanelDto)
-    .then(panel => {
-      return this._handlerService.sendResponse(
-        "Se ha registrado correctamente el panel",
-        panel
-      );
-    })
+  public list(
+    @Paginate() query: PaginateQuery
+  ): Promise<Paginated<Panel>>{
+    return this.panelsService.list(query)
     .catch(error => {
       throw new HttpException(
         {
@@ -31,20 +28,39 @@ export class PanelsController {
         },
         error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );
-    })
+    });
   }
 
-  @Get()
+  @Post()
   @UseGuards(AuthGuard())
-  async findAll() {
-    return await this.panelsService.findAll();
-    //return this.panelsService.findAll();
+  public store(
+    @Body(ValidationPipe) createPanelDto: CreatePanelDto ,
+    @Req() req: Request
+  ) {
+    createPanelDto.user_id = req['user'].id;
+    return this.panelsService.store(createPanelDto)
+    .then(response => {
+      const { created_at, updated_at, user_id, ...panel} = response
+      return this._handlerService.sendResponse(
+        "Se ha registrado el panel correctamente",
+        panel
+      );
+    })
+    .catch(error => {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.response || "Ha ocurrido un problema",
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    })
   }
 
   @Get(':uuid')
   @UseGuards(AuthGuard())
-  findOne(@Param('uuid') uuid: string) {
-    return this.panelsService.findOne(uuid)
+  show(@Param('uuid') uuid: string) {
+    return this.panelsService.show(uuid)
     .then(panel => {
       return this._handlerService.sendResponse(
         "Se ha obtenido el panel correctamente",
@@ -52,7 +68,6 @@ export class PanelsController {
       );
     })
     .catch(error => {
-      console.log(error)
       throw new HttpException(
         {
           success: false,
@@ -65,7 +80,11 @@ export class PanelsController {
 
   @Patch(':uuid')
   @UseGuards(AuthGuard())
-  update(@Param('uuid') uuid: string, @Body(ValidationPipe) updatePanelDto: UpdatePanelDto, @Req() req: Request) {
+  update(
+    @Param('uuid') uuid: string, 
+    @Body(ValidationPipe) updatePanelDto: UpdatePanelDto, 
+    @Req() req: Request
+  ) {
     updatePanelDto.user_id = req['user'].id;
     return this.panelsService.update(uuid, updatePanelDto)
     .then(panel => {
@@ -87,8 +106,8 @@ export class PanelsController {
 
   @Delete(':uuid')
   @UseGuards(AuthGuard())
-  remove(@Param('uuid') uuid: string) {
-    return this.panelsService.remove(uuid)
+  destroy(@Param('uuid') uuid: string) {
+    return this.panelsService.destroy(uuid)
     .then(() => {
       return this._handlerService.sendResponse(
         "Se ha eliminado el panel correctamente"
