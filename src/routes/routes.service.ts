@@ -44,10 +44,10 @@ export class RoutesService {
     route.departure_time = "now";
     route.traffic_model = "best_guess";
     await this.routeRepository.save(route);
-    // let routeList = [];
-    // routeList.push(await this.getRouteMapsGoogle(route.id));
-    // route.details = routeList;
-    // await this.routeRepository.save(route);
+    let routeList = [];
+    routeList.push(await this.getRouteMapsGoogle(route.id));
+    route.details = routeList;
+    await this.routeRepository.save(route);
     return route;
   }
 
@@ -69,8 +69,7 @@ export class RoutesService {
     return "La ruta se ha eliminado correctamente";
   }
 
-
-  async getRouteMapsGoogle(route_id: string) {
+  private async getRouteMapsGoogle(route_id: string) {
     const apiKey = 'AIzaSyBlnKdEioRJV1_Vnc2iXhVnOP5H_lxRVWM'; // Reemplaza con tu propia clave de API de Google Maps
     const rutaLane = await this.routeRepository.findOne({ where: { id: route_id }, relations: ['lane', 'lane.panel'] });
     const { destination, mode, departure_time, traffic_model, lane } = rutaLane;
@@ -102,7 +101,7 @@ export class RoutesService {
   }
 
   @Cron('0 */15 * * * *') 
-  async actualizarRoutes() {
+  private async updatingRoutes() {
     try {
       const apiKey = 'AIzaSyBlnKdEioRJV1_Vnc2iXhVnOP5H_lxRVWM';
       // Obtener todos los paneles activos

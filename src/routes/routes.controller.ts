@@ -125,15 +125,4 @@ export class RoutesController {
       );
     });
   }
-
-
-  // @Get('panels')
-  // @UseGuards(AuthGuard())
-  // @ApiResponse({ status: 200, description: 'Returns all panels', type: Route })
-  // @ApiResponse({ status: 400, description: 'Bad request' })
-  // @ApiResponse({ status: 401, description: 'Forbidden, token reloaded' })
-
-  // @Get(':uuid/traffic')
-  // @UseGuards(AuthGuard())
-
 }

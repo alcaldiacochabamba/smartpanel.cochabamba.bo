@@ -49,6 +49,14 @@ export class PanelsService {
     return `El panel con el id ${uuid}} se ha eliminado correctamente`;
   }
 
+  public async getPanelCompleteById(uuid: string) {
+    if (!await this.panelRepository.existsBy({id: uuid})) throw new HttpException(`No se ha logrado encontrar el panel con el id ${uuid}`, HttpStatus.NOT_FOUND);
+    return await this.panelRepository.findOne({
+      relations: ['lanes','messages', 'lanes.routes'],
+      where: {id: uuid}
+    });
+  }
+
   private getLatestDetail(details: any[]): any[] {
     if (details.length === 0) return [];
     details.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());

@@ -108,9 +108,10 @@ export class PanelsController {
   @UseGuards(AuthGuard())
   public destroy(@Param('uuid') uuid: string) {
     return this.panelsService.destroy(uuid)
-    .then(() => {
+    .then((panel) => {
       return this._handlerService.sendResponse(
-        "Se ha eliminado el panel correctamente"
+        "Se ha actualizado el panel correctamente",
+        panel
       );
     })
     .catch(error => {
@@ -122,5 +123,28 @@ export class PanelsController {
         error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );
     });
+  }
+
+  @Get('/complete/:uuid')
+  @UseGuards(AuthGuard())
+  public getPanelCompleteById(
+    @Param('uuid') uuid: string
+  ) {
+    return this.panelsService.getPanelCompleteById(uuid)
+    .then((panel) => {
+      return this._handlerService.sendResponse(
+        "Se ha obtenido el panel correctamente",
+        panel
+      );
+    })
+    .catch(error => {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.response || "An error occurred",
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    })
   }
 }
