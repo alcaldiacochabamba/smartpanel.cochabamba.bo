@@ -16,7 +16,6 @@ export class PanelGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  private interval: NodeJS.Timeout;
   private panelId: string;
 
   constructor(
@@ -33,7 +32,7 @@ export class PanelGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(`Client disconnected: ${client.id}`);
   }
 
-  @Cron('* * * * * *') 
+  @Cron('0 */15 * * * *') 
   private async sendClient() {
     try {
       if (this.panelId) {
