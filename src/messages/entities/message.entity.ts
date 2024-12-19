@@ -1,6 +1,5 @@
 
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { User } from "../../auth/entities/users.entity";
 import { Panel } from "../../panels/entities/panel.entity";
 
 @Entity({ name: 'messages' })
@@ -55,18 +54,6 @@ export class Message {
      */
     @Column('text', { nullable: true })
     type: string;
-
-       /** 
-     * attribute: user
-     * description: Usuario creador del panel
-     * example: <uuid>
-    */
-       @ManyToOne(() => User)
-       @JoinColumn({ name: "user_id" })
-       user: User;    
-       @Column({ nullable: false, select: false })
-       user_id: string;
-       
 
     /**
      * attribute: created_at

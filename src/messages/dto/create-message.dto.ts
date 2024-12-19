@@ -18,10 +18,6 @@ export class CreateMessageDto {
 
     @IsUUID()
     @IsOptional()
-    user_id:string;
-
-    @IsUUID()
-    @IsOptional()
     panel_id:string;
     
 }

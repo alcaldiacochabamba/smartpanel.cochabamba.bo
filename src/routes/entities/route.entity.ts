@@ -1,8 +1,6 @@
-import { Column, Entity, Generated, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { RouteDetail } from "./route-detail.entity";
-import { Panel } from "../../panels/entities/panel.entity";
 import { ApiProperty } from "@nestjs/swagger";
-import { User } from "src/auth/entities/users.entity";
 import { Lane } from "src/lanes/entities/lane.entity";
 
 @Entity({ name: 'routes' })
@@ -30,18 +28,6 @@ export class Route {
     @Column('integer',{nullable:false})
     order:number;
 
-    /** 
-     * attribute: user
-     * description: Usuario creador del panel
-     * example: <uuid>
-    */
-       @ManyToOne(() => User)
-       @JoinColumn({ name: "user_id" })
-       user: User;    
-       @Column({ nullable: true, select:false })
-       user_id: string;
-   
-    
     /**
      * attribute: created_at
      * description: Fecha de creacion del ruta

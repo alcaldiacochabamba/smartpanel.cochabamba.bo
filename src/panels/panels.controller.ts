@@ -1,13 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, HttpStatus, ValidationPipe, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, ValidationPipe, HttpException } from '@nestjs/common';
 import { PanelsService } from './panels.service';
 import { CreatePanelDto } from './dto/create-panel.dto';
 import { UpdatePanelDto } from './dto/update-panel.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { HandlerService } from 'src/handler/handler.service';
 import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { Panel } from './entities/panel.entity';
+import { Public, Resource, Scopes} from 'nest-keycloak-connect';
 
 @Controller('api/v1/panels')
+@Resource(Panel.name)
 export class PanelsController {
   constructor(
     private readonly panelsService: PanelsService,
@@ -15,7 +16,7 @@ export class PanelsController {
   ) {}
 
   @Get()
-  @UseGuards(AuthGuard())
+  @Scopes('View')
   public list(
     @Paginate() query: PaginateQuery
   ): Promise<Paginated<Panel>>{
@@ -32,15 +33,13 @@ export class PanelsController {
   }
 
   @Post()
-  @UseGuards(AuthGuard())
+  @Scopes('Create')
   public store(
-    @Body(ValidationPipe) createPanelDto: CreatePanelDto ,
-    @Req() req: Request
+    @Body(ValidationPipe) createPanelDto: CreatePanelDto
   ) {
-    createPanelDto.user_id = req['user'].id;
     return this.panelsService.store(createPanelDto)
     .then(response => {
-      const { created_at, updated_at, user_id, ...panel} = response
+      const { created_at, updated_at, ...panel} = response
       return this._handlerService.sendResponse(
         "Se ha registrado el panel correctamente",
         panel
@@ -58,7 +57,7 @@ export class PanelsController {
   }
 
   @Get(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('View')
   public show(@Param('uuid') uuid: string) {
     return this.panelsService.show(uuid)
     .then(panel => {
@@ -79,13 +78,11 @@ export class PanelsController {
   }
 
   @Patch(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('Edit')
   public update(
     @Param('uuid') uuid: string, 
-    @Body(ValidationPipe) updatePanelDto: UpdatePanelDto, 
-    @Req() req: Request
+    @Body(ValidationPipe) updatePanelDto: UpdatePanelDto
   ) {
-    updatePanelDto.user_id = req['user'].id;
     return this.panelsService.update(uuid, updatePanelDto)
     .then(panel => {
       return this._handlerService.sendResponse(
@@ -105,7 +102,7 @@ export class PanelsController {
   }
 
   @Delete(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('Delete')
   public destroy(@Param('uuid') uuid: string) {
     return this.panelsService.destroy(uuid)
     .then((panel) => {
@@ -126,7 +123,7 @@ export class PanelsController {
   }
 
   @Get('/complete/:uuid')
-  @UseGuards(AuthGuard())
+  @Public(true)
   public getPanelCompleteById(
     @Param('uuid') uuid: string
   ) {

@@ -1,7 +1,5 @@
-import {  Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { User } from "src/auth/entities/users.entity";
+import {  Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Message } from "src/messages/entities/message.entity";
-import { Route } from "src/routes/entities/route.entity";
 import { Lane } from "src/lanes/entities/lane.entity";
 import { Exclude } from "class-transformer";
 
@@ -42,18 +40,6 @@ export class Panel {
      * */
     @Column('boolean', { nullable: false, default: true  })
     active: boolean;
-
-    /** 
-     * attribute: user
-     * description: Usuario creador del panel
-     * example: <uuid>
-    */
-    @Exclude()
-    @ManyToOne(() => User)
-    @JoinColumn({ name: "user_id" })
-    user: User;    
-    @Column({ nullable: false, select:false })
-    user_id: string;
 
     /**
      * attribute: created_at
