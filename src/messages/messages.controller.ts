@@ -1,13 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { HandlerService } from 'src/handler/handler.service';
 import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { Message } from './entities/message.entity';
+import { Resource, Scopes } from 'nest-keycloak-connect';
 
 @Controller('api/v1/messages')
+@Resource(Message.name)
 export class MessagesController {
   constructor(
     private readonly messagesService: MessagesService,
@@ -16,7 +17,7 @@ export class MessagesController {
 
 
   @Get()
-  @UseGuards(AuthGuard())
+  @Scopes('View')
   public list(
     @Paginate() query: PaginateQuery
   ): Promise<Paginated<Message>> {
@@ -34,15 +35,13 @@ export class MessagesController {
 
 
   @Post()
-  @UseGuards(AuthGuard())
+  @Scopes('Create')
   public store(
     @Body() createMessageDto: CreateMessageDto,
-    @Req() req: Request
   ) {
-    createMessageDto.user_id = req['user'].id;
     return this.messagesService.store(createMessageDto)    
     .then(response => {
-      const { created_at, updated_at, user_id, ...message} = response
+      const { created_at, updated_at, ...message} = response
       return this._handlerService.sendResponse(
         "Se ha registrado correctamente el mensaje",
         message
@@ -60,9 +59,8 @@ export class MessagesController {
 
   }
 
-
   @Get(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('View')
   public show(@Param('uuid') uuid: string) {
     return this.messagesService.show(uuid)
     .then(message => {
@@ -83,13 +81,11 @@ export class MessagesController {
   }
 
   @Patch(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('Edit')
   public update(
     @Param('uuid') uuid: string, 
-    @Body() updateMessageDto: UpdateMessageDto, 
-    @Req() req: Request
+    @Body() updateMessageDto: UpdateMessageDto
   ) {
-    updateMessageDto.user_id = req['user'].id;
     return this.messagesService.update(uuid, updateMessageDto)
     .then(message => {
       return this._handlerService.sendResponse(
@@ -109,7 +105,7 @@ export class MessagesController {
   }
 
   @Delete(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('Delete')
   public destroy(@Param('uuid') uuid: string) {
     return this.messagesService.destroy(uuid)
     .then(() => {

@@ -1,14 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { LanesService } from './lanes.service';
 import { CreateLaneDto } from './dto/create-lane.dto';
 import { UpdateLaneDto } from './dto/update-lane.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { HandlerService } from 'src/handler/handler.service';
 import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { Lane } from './entities/lane.entity';
-
+import { Resource, Scopes } from 'nest-keycloak-connect';
 
 @Controller('api/v1/lanes')
+@Resource(Lane.name)
 export class LanesController {
   constructor(
     private readonly lanesService: LanesService,
@@ -16,7 +16,7 @@ export class LanesController {
   ) {}
 
   @Get()
-  @UseGuards(AuthGuard())
+  @Scopes('View')
   public list(
     @Paginate() query: PaginateQuery
   ): Promise<Paginated<Lane>> {
@@ -33,11 +33,11 @@ export class LanesController {
   }
 
   @Post()
-  @UseGuards(AuthGuard())
+  @Scopes('Create')
   public store(@Body(ValidationPipe) createLaneDto: CreateLaneDto) {
     return this.lanesService.store(createLaneDto)
     .then(response => {
-      const { created_at, updated_at, user_id, ...lane} = response
+      const { created_at, updated_at, ...lane} = response
       return this._handlerService.sendResponse(
         "Se ha registrado correctamente el lane",
         lane
@@ -55,7 +55,7 @@ export class LanesController {
   }
 
   @Get(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('View')
   public show(@Param('uuid') uuid: string) {
     return this.lanesService.show(uuid)
     .then(lane => {
@@ -76,7 +76,7 @@ export class LanesController {
   }
 
   @Patch(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('Edit')
   public update(
     @Param('uuid') uuid: string, 
     @Body(ValidationPipe) updateLaneDto: UpdateLaneDto
@@ -100,7 +100,7 @@ export class LanesController {
   }
 
   @Delete(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('Delete')
   public destroy(@Param('uuid') uuid: string) {
     return this.lanesService.destroy(uuid)
     .then(() => {

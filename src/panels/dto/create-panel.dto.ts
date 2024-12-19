@@ -16,8 +16,4 @@ export class CreatePanelDto {
     @IsNotEmpty()
     origin:string;
 
-    @IsUUID()
-    @IsOptional()
-    user_id:string;
-
 }

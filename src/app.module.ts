@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HelpersModule } from './helpers/helpers.module';
-import { AuthModule } from './auth/auth.module';
 import { RoutesModule } from './routes/routes.module';
 import { PanelsModule } from './panels/panels.module';
 import { MessagesModule } from './messages/messages.module';
@@ -15,6 +14,10 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { HandlerModule } from './handler/handler.module';
 import { IsUnique } from './validations/is-unique.validator';
 import { WebsocketsModule } from './websockets/websockets.module';
+import { AuthGuard, KeycloakConnectModule, ResourceGuard, RoleGuard } from 'nest-keycloak-connect';
+import { KeycloakService } from './config/keycloak.service';
+import { APP_GUARD } from '@nestjs/core';
+import { KeycloakConfigModule } from './config/config.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -30,18 +33,37 @@ import { WebsocketsModule } from './websockets/websockets.module';
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
       synchronize: true,
+      cache: false
+    }),
+    ScheduleModule.forRoot(),
+    KeycloakConnectModule.registerAsync({
+      useExisting: KeycloakService,
+      imports: [KeycloakConfigModule]
     }),
     HelpersModule,
-    AuthModule,
     RoutesModule,
     PanelsModule,
     MessagesModule,
     LanesModule,
-    ScheduleModule.forRoot(),
     HandlerModule,
     WebsocketsModule
   ],
   controllers: [AppController],
-  providers: [AppService, IsUnique],
+  providers: [
+    AppService, 
+    IsUnique,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ResourceGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
+    },
+  ],
 })
 export class AppModule { }

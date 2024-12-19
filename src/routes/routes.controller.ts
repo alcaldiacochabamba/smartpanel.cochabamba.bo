@@ -1,16 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Logger, Query, HttpCode, HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { RoutesService } from './routes.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { Route } from './entities/route.entity';
 import { HandlerService } from 'src/handler/handler.service';
 import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
-import { query } from 'express';
+import { Scopes } from 'nest-keycloak-connect';
 
 @ApiTags('Routes')
-@ApiSecurity('basic')
 @Controller('api/v1/routes')
 export class RoutesController {
   
@@ -21,7 +19,7 @@ export class RoutesController {
 
 
   @Get()
-  @UseGuards(AuthGuard())
+  @Scopes('View')
   public list(
     @Paginate() query: PaginateQuery
   ): Promise<Paginated<Route>> {
@@ -38,13 +36,13 @@ export class RoutesController {
   }
 
   @Post()
-  @UseGuards(AuthGuard())
+  @Scopes('Create')
   public store(
     @Body(ValidationPipe) createRouteDto: CreateRouteDto
   ) {
     return this.routesService.store(createRouteDto)
     .then(response => {
-      const { created_at, updated_at, user_id, ...route} = response
+      const { created_at, updated_at, ...route} = response
       return this._handlerService.sendResponse(
         "Se ha registrado correctamente la ruta",
         route
@@ -62,7 +60,7 @@ export class RoutesController {
   }
 
   @Get(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('View')
   public show(@Param('uuid') uuid: string) {
     return this.routesService.show(uuid)
     .then(route => {
@@ -83,7 +81,7 @@ export class RoutesController {
   }
 
   @Patch(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('Edit')
   public update(
     @Param('uuid') uuid: string, 
     @Body(ValidationPipe) updateRouteDto: UpdateRouteDto
@@ -107,7 +105,7 @@ export class RoutesController {
   }
 
   @Delete(':uuid')
-  @UseGuards(AuthGuard())
+  @Scopes('Delete')
   public destroy(@Param('uuid') uuid: string) {
     return this.routesService.destroy(uuid)
     .then(() => {

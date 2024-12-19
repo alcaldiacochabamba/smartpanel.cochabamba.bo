@@ -16,14 +16,8 @@ export class CreateRouteDto {
     @IsOptional()
     nivel: number;
 
-
     @IsUUID()
     lane_id: string;
-
-    
-    @IsUUID()
-    @IsOptional()
-    user_id:string;
 }
 
 
