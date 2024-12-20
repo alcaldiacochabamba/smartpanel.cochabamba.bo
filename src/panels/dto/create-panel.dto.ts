@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID, Validate } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsString, Validate } from "class-validator";
 import { IsUnique } from "src/validations/is-unique.validator";
 
 export class CreatePanelDto {
@@ -15,5 +15,8 @@ export class CreatePanelDto {
     @IsString()
     @IsNotEmpty()
     origin:string;
+
+    @IsBoolean()
+    active:boolean;
 
 }

@@ -6,7 +6,6 @@ import { Lane } from './entities/lane.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 
-
 @Injectable()
 export class LanesService {
   private readonly logger = new Logger('PanelsService');
