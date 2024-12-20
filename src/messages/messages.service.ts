@@ -24,6 +24,17 @@ export class MessagesService {
     });
   }
 
+  public async listByPanelId(query: PaginateQuery, panel_id: string): Promise<Paginated<Message>> {
+    return await paginate(query, this.messageRepository, {
+      sortableColumns: ['id','title','priority', 'icon', 'type'],
+      nullSort: 'last',
+      defaultSortBy: [['title', 'ASC']],
+      searchableColumns: ['title', 'description'],
+      select: ['id','title', 'description', 'priority', 'icon', 'type', 'active'],
+      where: {panel_id: panel_id}
+    });
+  }
+
   public async store(createMessageDto: CreateMessageDto) {
     return await this.messageRepository.save(
       this.messageRepository.create(createMessageDto)

@@ -18,9 +18,26 @@ export class LanesController {
   @Get()
   @Scopes('View')
   public list(
-    @Paginate() query: PaginateQuery
+    @Paginate() query: PaginateQuery,
   ): Promise<Paginated<Lane>> {
     return this.lanesService.list(query)
+    .catch(error => {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.response || "An error occurred",
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    });
+  }
+  @Get('by-panel/:uuid')
+  @Scopes('View')
+  public listByPanelId(
+    @Paginate() query: PaginateQuery,
+    @Param('uuid') uuid: string
+  ): Promise<Paginated<Lane>> {
+    return this.lanesService.listByPanelId(query, uuid)
     .catch(error => {
       throw new HttpException(
         {

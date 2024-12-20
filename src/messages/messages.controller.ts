@@ -33,6 +33,24 @@ export class MessagesController {
     });
   }
 
+  @Get('by-panel/:uuid')
+  @Scopes('View')
+  public listByPanelId(
+    @Paginate() query: PaginateQuery,
+    @Param('uuid') uuid: string
+  ): Promise<Paginated<Message>> {
+    return this.messagesService.listByPanelId(query, uuid)
+    .catch(error => {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.response || "An error occurred",
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    });
+  }
+
 
   @Post()
   @Scopes('Create')

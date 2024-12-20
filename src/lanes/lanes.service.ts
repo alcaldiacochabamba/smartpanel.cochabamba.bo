@@ -23,7 +23,17 @@ export class LanesService {
       nullSort: 'last',
       defaultSortBy: [['name', 'ASC']],
       searchableColumns: ['id', 'name', 'lane_number', 'orientation'],
-      select: ['id', 'name', 'lane_number', 'orientation']
+      select: ['id', 'name', 'lane_number', 'orientation'],
+    })
+  }
+  public async listByPanelId(query: PaginateQuery, panel_id: string): Promise<Paginated<Lane>> {
+    return await paginate(query, this.laneRepository, {
+      sortableColumns: ['id', 'name', 'lane_number', 'orientation'],
+      nullSort: 'last',
+      defaultSortBy: [['name', 'ASC']],
+      searchableColumns: ['id', 'name', 'lane_number', 'orientation'],
+      select: ['id', 'name', 'lane_number', 'orientation'],
+      where: {panel_id: panel_id}
     })
   }
 
