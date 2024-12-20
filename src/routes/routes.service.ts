@@ -146,6 +146,19 @@ export class RoutesService {
     }
   }
 
+
+  public async getByLaneId(uuid: string) {
+    return await this.routeRepository.find({
+      where: {lane_id: uuid},
+      select: {
+        id: true,
+        title: true,
+        destination: true,
+        order: true
+      }
+    })
+  }
+
   private manageDBExeptions(error: any) {
     this.logger.error(error.message, error.stack);
     if (error.code === '23505') throw new BadRequestException(error.detail);

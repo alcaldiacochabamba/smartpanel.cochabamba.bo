@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID } from "class-validator";
+import { IsString, IsUUID } from "class-validator";
 
 export class CreateMessageDto {
     @IsString()
@@ -17,7 +17,6 @@ export class CreateMessageDto {
     type:string;
 
     @IsUUID()
-    @IsOptional()
     panel_id:string;
     
 }

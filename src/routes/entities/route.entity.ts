@@ -47,7 +47,7 @@ export class Route {
     @OneToMany(() => RouteDetail, routedetail => routedetail.route,
         {
             cascade: true,
-            eager: true,
+            eager: false,
         }
     )
     details?: RouteDetail[];

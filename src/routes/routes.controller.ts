@@ -2,14 +2,13 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpS
 import { RoutesService } from './routes.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
-import { ApiTags } from '@nestjs/swagger';
 import { Route } from './entities/route.entity';
 import { HandlerService } from 'src/handler/handler.service';
 import { Paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
-import { Scopes } from 'nest-keycloak-connect';
+import { Resource, Scopes } from 'nest-keycloak-connect';
 
-@ApiTags('Routes')
 @Controller('api/v1/routes')
+@Resource(Route.name)
 export class RoutesController {
   
   constructor(
@@ -112,6 +111,27 @@ export class RoutesController {
       return this._handlerService.sendResponse(
         "Se ha eliminado la ruta correctamente"
       );
+    })
+    .catch(error => {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.response || "Ha ocurrido un problema",
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    });
+  }
+
+  @Get('by-lane/:uuid')
+  @Scopes('View')
+  public getByLaneId(@Param('uuid') uuid: string) {
+    return this.routesService.getByLaneId(uuid)
+    .then(route => {
+      return this._handlerService.sendResponse(
+        "Se han obtenido las rutas correctamente",
+        route
+      )
     })
     .catch(error => {
       throw new HttpException(
